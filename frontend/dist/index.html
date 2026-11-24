@@ -1,0 +1,2889 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#060a11" />
+    <meta name="description" content="Netmiko Web Console — NOC dashboard điều khiển CLI hàng loạt qua Netmiko MCP" />
+    <title>Netmiko Web Console · NOC</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M8 12l5 4-5 4M16 20h8' stroke='%2322d3ee' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      html, body { margin: 0; background: #060a11; color: #e8effa; height: 100%; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+      #boot { position: fixed; inset: 0; display: grid; place-items: center; font-family: system-ui, sans-serif; }
+      #boot .dot { width: 10px; height: 10px; border-radius: 50%; background: #22d3ee; animation: b 1s infinite alternate; }
+      @keyframes b { to { opacity: 0.2; transform: scale(0.7); } }
+    </style>
+    <script type="module" crossorigin src="/assets/index-CH4DDEXX.js?v=1001"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CSqX3aJe.css?v=1001">
+    <style id="run-console-enhancer">
+      /* 1. Mở rộng chiều ngang cột phải RUN CONSOLE */
+      .workspace {
+        grid-template-columns: 260px minmax(0, 1fr) 480px !important;
+      }
+      @media (max-width: 1400px) {
+        .workspace {
+          grid-template-columns: 236px minmax(0, 1fr) 460px !important;
+        }
+      }
+
+      /* Ẩn hoàn toàn chức năng Route Trace */
+      .view-nav-item[title*="Route"],
+      button[title*="Route"] {
+        display: none !important;
+      }
+
+      /* 2. Cho phép RUN CONSOLE cuộn tự nhiên, không bị kẹt ở đáy */
+      .run-panel {
+        display: flex !important;
+        flex-direction: column !important;
+        max-height: calc(100vh - 84px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scroll-behavior: smooth !important;
+      }
+
+      /* 3. Thu gọn phần Soạn lệnh bên trên để nhường không gian cho kết quả */
+      .composer {
+        padding: 9px 12px !important;
+        flex: 0 0 auto !important;
+      }
+      .composer-head {
+        margin-bottom: 6px !important;
+      }
+      .command-input {
+        min-height: 64px !important;
+        max-height: 100px !important;
+        padding: 6px 9px !important;
+        font-size: 11.5px !important;
+      }
+      .command-hint {
+        margin-top: 2px !important;
+        font-size: 9.5px !important;
+      }
+      .preset-block {
+        margin-top: 5px !important;
+      }
+      .preset-head {
+        margin-bottom: 3px !important;
+        font-size: 10.5px !important;
+      }
+      .preset-chips {
+        max-height: 54px !important;
+        gap: 4px !important;
+      }
+      .preset-chip {
+        padding: 2px 6px !important;
+        font-size: 10px !important;
+      }
+      .options-block {
+        margin-top: 5px !important;
+      }
+      .run-actions {
+        margin-top: 7px !important;
+      }
+      .run-btn {
+        height: 38px !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+      }
+
+      /* 4. Tăng không gian và chiều cao cho khối Kết quả (RUN RESULTS) */
+      .run-results {
+        flex: 1 1 auto !important;
+        min-height: 320px !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .run-head {
+        padding: 8px 12px !important;
+      }
+      .run-tiles {
+        margin-top: 6px !important;
+        gap: 4px !important;
+      }
+      .run-tile {
+        padding: 5px 8px !important;
+      }
+      .progress-block {
+        margin-top: 6px !important;
+      }
+      .run-toolbar {
+        margin-top: 6px !important;
+        gap: 5px !important;
+      }
+
+      /* 5. DANH SÁCH THIẾT BỊ: Rộng rãi, thoáng, dễ nhìn và dễ bấm */
+      .result-list {
+        flex: 1 1 auto !important;
+        min-height: 280px !important;
+        max-height: 520px !important;
+        overflow-y: auto !important;
+        padding: 6px 8px !important;
+      }
+      .result-row {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) minmax(0, 130px) auto auto !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 10px 12px !important;
+        margin-bottom: 6px !important;
+        border-radius: 9px !important;
+        border: 1px solid rgba(148, 163, 184, 0.16) !important;
+        background: rgba(14, 23, 38, 0.75) !important;
+        transition: all 0.15s ease !important;
+        cursor: pointer !important;
+      }
+      .result-row:hover {
+        background: rgba(34, 211, 238, 0.12) !important;
+        border-color: rgba(34, 211, 238, 0.45) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+      }
+      .result-name {
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        color: #f8fafc !important;
+      }
+      .result-sub {
+        font-size: 10px !important;
+        color: #94a3b8 !important;
+      }
+      .result-reason {
+        font-size: 10.5px !important;
+        color: #cbd5e1 !important;
+        font-weight: 500 !important;
+      }
+      .result-row::after {
+        content: "Xem log ↗";
+        font-size: 10.5px;
+        font-weight: 600;
+        color: #22d3ee;
+        padding: 3px 8px;
+        border-radius: 5px;
+        background: rgba(34, 211, 238, 0.12);
+        border: 1px solid rgba(34, 211, 238, 0.3);
+        white-space: nowrap;
+        margin-left: 4px;
+        transition: all 0.15s ease;
+      }
+      .result-row:hover::after {
+        background: #22d3ee;
+        color: #020617;
+      }
+
+      /* 6. NÚT CHỮ "A" VÀ "I" TRÊN TOPBAR (A: /ai [Tàng hình 100%], I: /ia) */
+      .btn-stealth-a {
+        display: inline-flex !important;
+        width: 22px !important;
+        height: 27px !important;
+        background: transparent !important;
+        border: none !important;
+        color: transparent !important;
+        opacity: 0 !important;
+        cursor: default !important;
+        user-select: none !important;
+        outline: none !important;
+        box-shadow: none !important;
+        margin-right: 4px !important;
+      }
+      .btn-stealth-a:hover, .btn-stealth-a:active, .btn-stealth-a:focus {
+        background: transparent !important;
+        border: none !important;
+        color: transparent !important;
+        opacity: 0 !important;
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      .btn-stealth-i {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 27px !important;
+        height: 27px !important;
+        border-radius: 6px !important;
+        font-size: 11.5px !important;
+        font-weight: 700 !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        color: #64748b !important;
+        background: rgba(15, 23, 42, 0.5) !important;
+        border: 1px solid rgba(148, 163, 184, 0.16) !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        transition: all 0.15s ease !important;
+        margin-right: 5px !important;
+      }
+      .btn-stealth-i:hover {
+        color: #94a3b8 !important;
+        background: rgba(30, 41, 59, 0.7) !important;
+        border-color: rgba(148, 163, 184, 0.3) !important;
+      }
+
+      /* 7. PHÒNG LÀM VIỆC DÀNH RIÊNG CHO /ai VÀ /ia */
+      #ai-workspace {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: #060a11;
+        display: flex;
+        flex-direction: column;
+        color: #e2e8f0;
+        overflow: hidden;
+      }
+
+      /* Chế độ Ngụy Trang Cho /ia (Mọi người nhìn vào chỉ là tool tự động NOC bình thường) */
+      #ai-workspace.mode-ia #ai-compact-toolbar,
+      #ai-workspace.mode-ia #ai-quick-model-box,
+      #ai-workspace.mode-ia #ai-reasoning-effort-box,
+      #ai-workspace.mode-ia #btn-open-ai-settings,
+      #ai-workspace.mode-ia #ai-agent-indicator,
+      #ai-workspace.mode-ia #ai-settings-backdrop {
+        display: none !important;
+      }
+      #ai-workspace.mode-ia #ia-tool-status {
+        display: inline-flex !important;
+      }
+
+      .ai-header {
+        height: 52px;
+        background: #090e17;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+        flex-shrink: 0;
+      }
+      .ai-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .ai-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #94a3b8;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 7px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .ai-back-btn:hover {
+        background: rgba(51, 65, 85, 0.8);
+        color: #f1f5f9;
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+      .ai-title {
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ai-title .sub {
+        font-size: 11px;
+        font-weight: 400;
+        color: #64748b;
+      }
+      .ai-header-right {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      /* Compact Toolbar for Model & Reasoning & Settings */
+      .ai-compact-toolbar {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(15, 23, 42, 0.75);
+        padding: 3px 5px;
+        border-radius: 8px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      }
+      .ai-compact-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 6px;
+        background: rgba(2, 6, 23, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 6px;
+      }
+      .ai-compact-icon {
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        user-select: none;
+      }
+      .ai-compact-select {
+        background: transparent;
+        color: #38bdf8;
+        border: none;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 2px;
+        outline: none;
+        cursor: pointer;
+        max-width: 175px;
+        text-overflow: ellipsis;
+      }
+      .ai-compact-select option {
+        background: #090e17;
+        color: #f1f5f9;
+        font-weight: normal;
+      }
+      .ai-compact-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        color: #e2e8f0;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 9px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        height: 24px;
+      }
+      .ai-compact-btn:hover {
+        background: rgba(56, 189, 248, 0.2);
+        color: #38bdf8;
+        border-color: rgba(56, 189, 248, 0.5);
+      }
+
+      /* Model Selector & Settings Gear Legacy Fallback */
+      .ai-model-box {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ai-select-mini {
+        background: #040913;
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 6px;
+        outline: none;
+        cursor: pointer;
+      }
+      .ai-btn-gear {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .ai-badge {
+        font-size: 11px;
+        padding: 3px 9px;
+        border-radius: 999px;
+        background: rgba(34, 211, 238, 0.12);
+        color: #22d3ee;
+        border: 1px solid rgba(34, 211, 238, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+      .ai-badge.ready::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #22d3ee;
+        box-shadow: 0 0 8px #22d3ee;
+      }
+
+      .ai-body {
+        flex: 1 1 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 270px;
+        gap: 14px;
+        padding: 14px 18px;
+        overflow: hidden;
+      }
+      @media (max-width: 860px) {
+        .ai-body {
+          grid-template-columns: 1fr;
+          overflow-y: auto;
+        }
+      }
+
+      /* User Message Bubble in Multi-turn Chat */
+      .ai-feed-user-bubble {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-left: 3px solid #38bdf8;
+        border-radius: 8px;
+        padding: 9px 12px;
+        margin: 6px 0 10px 0;
+      }
+      .ai-feed-user-meta {
+        font-size: 11px;
+        font-weight: 700;
+        color: #38bdf8;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ai-feed-user-text {
+        font-size: 12px;
+        color: #f1f5f9;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+
+      /* Session History Pane */
+      .btn-new-session {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(34, 211, 238, 0.15);
+        border: 1px solid rgba(34, 211, 238, 0.4);
+        color: #38bdf8;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .btn-new-session:hover {
+        background: #22d3ee;
+        color: #020617;
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+      }
+      .ai-session-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+      }
+      .ai-session-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .ai-session-item:hover {
+        background: rgba(30, 41, 59, 0.7);
+        border-color: rgba(56, 189, 248, 0.3);
+      }
+      .ai-session-item.active {
+        background: rgba(14, 165, 233, 0.14);
+        border-color: rgba(56, 189, 248, 0.6);
+        box-shadow: inset 2px 0 0 #38bdf8;
+      }
+      .ai-session-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow: hidden;
+        flex: 1;
+        min-width: 0;
+      }
+      .ai-session-title {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #e2e8f0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ai-session-meta {
+        font-size: 10px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ai-session-del {
+        background: transparent;
+        border: none;
+        color: #64748b;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 3px 6px;
+        border-radius: 4px;
+        opacity: 0.6;
+        transition: all 0.15s;
+        margin-left: 6px;
+      }
+      .ai-session-item:hover .ai-session-del {
+        opacity: 1;
+      }
+      .ai-session-del:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+      }
+
+      .ai-pane {
+        background: #090f1a;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .ai-pane-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(15, 23, 42, 0.5);
+      }
+      .ai-pane-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #94a3b8;
+      }
+      .ai-pane-content {
+        flex: 1 1 auto;
+        padding: 14px 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .ai-textarea {
+        width: 100%;
+        min-height: 110px;
+        max-height: 180px;
+        padding: 10px 12px;
+        border-radius: 9px;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        background: #030712;
+        color: #f1f5f9;
+        font-family: inherit;
+        font-size: 12.5px;
+        line-height: 1.5;
+        outline: none;
+        box-sizing: border-box;
+      }
+      .ai-textarea:focus {
+        border-color: #22d3ee;
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+      }
+
+      .ai-quick-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+      .ai-quick-tag {
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        color: #cbd5e1;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .ai-quick-tag:hover {
+        background: rgba(34, 211, 238, 0.15);
+        border-color: rgba(34, 211, 238, 0.35);
+        color: #22d3ee;
+      }
+
+      .ai-actions-row {
+        display: flex;
+        gap: 10px;
+      }
+      .btn-action-primary {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        border: 1px solid #38bdf8;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .btn-action-primary:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+      }
+      .btn-action-secondary {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        height: 38px;
+        border-radius: 8px;
+        background: rgba(34, 211, 238, 0.12);
+        border: 1px solid rgba(34, 211, 238, 0.4);
+        color: #22d3ee;
+        font-weight: 700;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .btn-action-secondary:hover {
+        background: rgba(34, 211, 238, 0.22);
+        border-color: #22d3ee;
+      }
+
+      .ai-feed-box {
+        flex: 1 1 auto;
+        min-height: 220px;
+        background: #040813;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 10px;
+        padding: 12px 14px;
+        overflow-y: auto;
+        font-size: 12px;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .ai-feed-item {
+        display: flex;
+        gap: 8px;
+        padding: 5px 0;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      }
+      .ai-tag {
+        font-family: monospace;
+        font-size: 10.5px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        height: fit-content;
+        white-space: nowrap;
+      }
+      .ai-tag.thinking { background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
+      .ai-tag.tool { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+      .ai-tag.exec { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+      .ai-tag.result { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+      /* Live Reasoning Thought Box */
+      .ai-reasoning-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 6px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .ai-reasoning-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #38bdf8;
+      }
+      .ai-reasoning-body {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
+        color: #94a3b8;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+
+      .ai-report {
+        white-space: pre-wrap;
+        color: #e2e8f0;
+        line-height: 1.65;
+        font-size: 12px;
+      }
+
+      /* Context & Inventory Search Box */
+      .ai-search-input {
+        width: 100%;
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: #030712;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #f1f5f9;
+        font-size: 11.5px;
+        outline: none;
+        box-sizing: border-box;
+      }
+      .ai-search-input:focus {
+        border-color: #22d3ee;
+      }
+      .ai-dev-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+      .ai-dev-card {
+        padding: 7px 10px;
+        border-radius: 7px;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .ai-dev-card:hover {
+        background: rgba(34, 211, 238, 0.1);
+        border-color: rgba(34, 211, 238, 0.35);
+      }
+      .ai-dev-name {
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #f8fafc;
+      }
+      .ai-dev-sub {
+        font-size: 10px;
+        color: #94a3b8;
+      }
+      .ai-cmd-pill {
+        font-family: monospace;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 5px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        color: #cbd5e1;
+        cursor: pointer;
+        display: block;
+        margin-bottom: 4px;
+        transition: all 0.15s;
+      }
+      .ai-cmd-pill:hover {
+        border-color: #22d3ee;
+        color: #22d3ee;
+      }
+
+      /* 8. SETTINGS MODAL DIALOG */
+      .ai-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(2, 6, 17, 0.85);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+      .ai-modal-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .ai-modal-card {
+        width: min(780px, 96vw);
+        max-height: 90vh;
+        background: #090e18;
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        border-radius: 14px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 25px rgba(34, 211, 238, 0.12);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .ai-modal-head {
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(15, 23, 42, 0.6);
+      }
+      .ai-modal-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ai-modal-close {
+        background: transparent;
+        border: 0;
+        color: #94a3b8;
+        font-size: 22px;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .ai-modal-close:hover {
+        color: #fff;
+        background: rgba(148, 163, 184, 0.15);
+      }
+      .ai-modal-body {
+        padding: 16px 18px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      /* Provider Tabs */
+      .ai-prov-tabs {
+        display: flex;
+        gap: 6px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+        padding-bottom: 8px;
+        overflow-x: auto;
+      }
+      .ai-prov-tab {
+        padding: 6px 12px;
+        border-radius: 7px;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        color: #94a3b8;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .ai-prov-tab.active {
+        background: rgba(34, 211, 238, 0.18);
+        border-color: #22d3ee;
+        color: #22d3ee;
+      }
+
+      .ai-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+      .ai-form-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #94a3b8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .ai-form-input {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 7px;
+        background: #030712;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #f1f5f9;
+        font-size: 12px;
+        font-family: inherit;
+        outline: none;
+        box-sizing: border-box;
+      }
+      .ai-form-input:focus {
+        border-color: #22d3ee;
+      }
+      .ai-form-note {
+        font-size: 10.5px;
+        color: #64748b;
+        line-height: 1.4;
+      }
+
+      .ai-modal-foot {
+        padding: 12px 18px;
+        border-top: 1px solid rgba(148, 163, 184, 0.15);
+        background: rgba(15, 23, 42, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .ai-test-badge {
+        font-size: 11px;
+        padding: 4px 9px;
+        border-radius: 5px;
+        font-weight: 600;
+        display: none;
+      }
+      .ai-test-badge.ok { display: inline-block; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+      .ai-test-badge.err { display: inline-block; background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.3); }
+      .ai-test-badge.loading { display: inline-block; background: rgba(34, 211, 238, 0.15); color: #22d3ee; }
+
+      /* ============================================================
+         FIX & TỐI ƯU GIAO DIỆN BỘ LỌC VÀ BẢNG THIẾT BỊ NOC CONSOLE
+         ============================================================ */
+
+      /* 1. Ô tìm kiếm thiết bị hàng loạt bên Sidebar Bộ lọc */
+      .sidebar .search-field,
+      .sidebar-scroll .search-field {
+        height: auto !important;
+        min-height: 38px !important;
+        align-items: flex-start !important;
+        padding: 7px 10px !important;
+        background: #050b14 !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 9px !important;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.5) !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+      }
+
+      .sidebar .search-field:focus-within,
+      .sidebar-scroll .search-field:focus-within {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18), inset 0 1px 3px rgba(0,0,0,0.5) !important;
+      }
+
+      .sidebar .search-field svg,
+      .sidebar-scroll .search-field svg {
+        margin-top: 3px !important;
+        flex-shrink: 0 !important;
+        color: #38bdf8 !important;
+      }
+
+      .sidebar .search-field textarea,
+      .sidebar-scroll .search-field textarea {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        min-height: 24px !important;
+        max-height: 180px !important;
+        border: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+        color: #f1f5f9 !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+        padding: 0 4px !important;
+        resize: vertical !important;
+        overflow-y: auto !important;
+        white-space: pre !important;
+        word-break: normal !important;
+      }
+
+      .sidebar .search-field .icon-btn.tiny,
+      .sidebar-scroll .search-field .icon-btn.tiny {
+        margin-top: 2px !important;
+        flex-shrink: 0 !important;
+        background: rgba(148, 163, 184, 0.1) !important;
+        border-radius: 4px !important;
+        color: #94a3b8 !important;
+      }
+      .sidebar .search-field .icon-btn.tiny:hover {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #f87171 !important;
+      }
+
+      /* Khoảng cách các section dưới ô tìm kiếm để không bao giờ bị đè */
+      .sidebar-scroll {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+      }
+
+      .filter-section {
+        position: relative !important;
+        z-index: 1 !important;
+        margin-top: 2px !important;
+      }
+
+      /* 2. Bảng danh sách thiết bị - Mở rộng hiển thị TÊN THIẾT BỊ đầy đủ */
+      .device-table {
+        table-layout: auto !important;
+        width: 100% !important;
+        min-width: 900px !important;
+      }
+
+      .table-wrap {
+        overflow-x: auto !important;
+      }
+
+      /* Checkbox cột 1 */
+      .device-table th.col-check,
+      .device-table td.col-check {
+        width: 42px !important;
+        min-width: 42px !important;
+        text-align: center !important;
+      }
+
+      /* Cột 2: THIẾT BỊ (Hostname) - Ưu tiên hàng đầu cho kỹ sư NOC */
+      .device-table th:nth-child(2),
+      .device-table td:nth-child(2) {
+        min-width: 250px !important;
+        width: 32% !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+      }
+
+      .device-table .device-name {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+        font-size: 13.5px !important;
+        font-weight: 700 !important;
+        color: #38bdf8 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        letter-spacing: 0.02em !important;
+        text-shadow: 0 0 12px rgba(56, 189, 248, 0.2) !important;
+      }
+
+      .device-table .device-sub {
+        font-size: 11px !important;
+        color: #94a3b8 !important;
+        margin-top: 3px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+      }
+
+      .device-table .device-sub .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        color: #cbd5e1 !important;
+        background: rgba(15, 23, 42, 0.6) !important;
+        padding: 1px 5px !important;
+        border-radius: 3px !important;
+        border: 1px solid rgba(148, 163, 184, 0.15) !important;
+      }
+
+      .device-table .device-desc {
+        color: #64748b !important;
+        font-size: 10.5px !important;
+      }
+
+      /* Cột 3: HÃNG */
+      .device-table th:nth-child(3),
+      .device-table td:nth-child(3) {
+        width: 95px !important;
+        min-width: 90px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Cột 4: DRIVER */
+      .device-table th:nth-child(4),
+      .device-table td:nth-child(4) {
+        width: 115px !important;
+        min-width: 105px !important;
+        font-family: ui-monospace, SFMono-Regular, monospace !important;
+      }
+
+      /* Cột 5: CHỨC NĂNG */
+      .device-table th.col-function,
+      .device-table td.col-function {
+        width: 18% !important;
+        min-width: 140px !important;
+      }
+
+      /* Cột 6: POP / ZONE */
+      .device-table th.col-pop,
+      .device-table td.col-pop {
+        width: 14% !important;
+        min-width: 120px !important;
+      }
+
+      /* Cột 7: PROFILE */
+      .device-table th.col-profile,
+      .device-table td.col-profile {
+        width: 85px !important;
+        min-width: 80px !important;
+      }
+
+      /* Hàng trong bảng - Chiều cao và hiệu ứng hover sắc nét */
+      .device-table td {
+        height: 50px !important;
+        vertical-align: middle !important;
+      }
+
+      .device-table tbody tr:hover {
+        background: rgba(14, 165, 233, 0.07) !important;
+      }
+
+      .device-table tbody tr.selected {
+        background: rgba(14, 165, 233, 0.14) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ỨNG DỤNG CONSOLE CHÍNH CỦA BẠN (REACT ROOT) -->
+    <div id="root"><div id="boot"><span class="dot"></span></div></div>
+
+    <!-- TAB RIÊNG TƯ MÃ HÓA /ai (CHỈ BẠN BIẾT) -->
+    <div id="ai-workspace" style="display: none;">
+      <!-- Header -->
+      <div class="ai-header">
+        <div class="ai-header-left">
+          <button type="button" class="ai-back-btn" id="ai-btn-back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            <span>Quay lại Console</span>
+          </button>
+          <div style="width: 1px; height: 18px; background: rgba(148, 163, 184, 0.2);"></div>
+          <div class="ai-title" id="ai-main-title">
+            <span id="ai-title-text">Incident Reasoning &amp; Investigation Engine</span>
+            <span class="sub" id="ai-subtitle-text">DeepSeek Autonomous Reasoning over Netmiko MCP</span>
+          </div>
+        </div>
+        <div class="ai-header-right">
+          <!-- Compact Toolbar: Gọn gàng, tinh tế, dễ sử dụng -->
+          <div class="ai-compact-toolbar" id="ai-compact-toolbar">
+            <!-- Model Selector -->
+            <div class="ai-compact-item" id="ai-quick-model-box" title="Chọn Model AI">
+              <span class="ai-compact-icon">🤖</span>
+              <select id="ai-quick-model" class="ai-compact-select">
+                <option value="">Đang tải...</option>
+              </select>
+            </div>
+
+            <!-- Reasoning Effort -->
+            <div class="ai-compact-item" id="ai-reasoning-effort-box" title="Mức suy luận (Reasoning Effort)">
+              <span class="ai-compact-icon">🧠</span>
+              <select id="ai-reasoning-effort" class="ai-compact-select" style="max-width: 105px;">
+                <option value="high" selected>Sâu (High)</option>
+                <option value="medium">Vừa (Med)</option>
+                <option value="low">Nhanh (Low)</option>
+              </select>
+            </div>
+
+            <!-- Nút Cài đặt -->
+            <button type="button" class="ai-compact-btn" id="btn-open-ai-settings" title="Cài đặt Provider, API Key &amp; Email">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Cài đặt</span>
+            </button>
+          </div>
+
+          <div class="ai-badge ready" id="ai-agent-indicator" style="display:none;">Sẵn sàng</div>
+          <div class="ai-badge ready" id="ia-tool-status" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; font-weight: 600;">🟢 Hệ Thống: Sẵn Sàng (CLI Diagnostic Engine)</div>
+        </div>
+      </div>
+
+      <!-- Main Body -->
+      <div class="ai-body">
+        <!-- Cột Trái: Nhập ticket & Điều tra ReAct -->
+        <div class="ai-pane">
+          <div class="ai-pane-header">
+            <span class="ai-pane-title" id="ai-left-title">Nội Dung Yêu Cầu / Ticket Sự Cố</span>
+            <span style="font-size: 10.5px; color: #64748b;" id="ai-left-sub">Chế độ an toàn: Chỉ đọc (Read-Only)</span>
+          </div>
+          <div class="ai-pane-content">
+            <textarea class="ai-textarea" id="ai-ticket-input" placeholder="Ví dụ: Ticket INC-9021: Router AGG-AggPE-01-01 báo rớt kết nối quốc tế, nghi ngờ flapping BGP và lỗi trên interface xe-0/0/0. Kiểm tra giúp tôi..."></textarea>
+            
+            <div class="ai-quick-tags">
+              <span style="font-size: 10.5px; color: #64748b;">Mẫu sự cố nhanh:</span>
+              <button type="button" class="ai-quick-tag" data-sample="Ticket: Router AGG-AggPE-01-01 báo lỗi BGP neighbor down và flapping, kiểm tra trạng thái BGP và route summary.">BGP Neighbor Flap</button>
+              <button type="button" class="ai-quick-tag" data-sample="Ticket: Cảnh báo interface xe-0/0/0 trên AGG-AggPE-01-01 có CRC error và drop gói tin bất thường.">Interface CRC Errors</button>
+              <button type="button" class="ai-quick-tag" data-sample="Kiểm tra tổng quan sức khỏe hệ thống: show version, uptime, chassis alarms và system alarms trên AGG-AggPE-01-01.">Chassis Alarms &amp; Uptime</button>
+              <button type="button" class="ai-quick-tag" data-sample="Ticket: Phát hiện CPU tăng vọt trên AGG-AggPE-01-02, kiểm tra tiến trình đang chạy và routing engine.">High CPU &amp; Memory</button>
+            </div>
+
+            <div class="ai-actions-row">
+              <button type="button" class="btn-action-secondary" id="ai-btn-analyze">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2Z"/></svg>
+                <span id="ai-btn-analyze-text">Phân Tích &amp; Chuẩn Bị Lệnh</span>
+              </button>
+              <button type="button" class="btn-action-primary" id="ai-btn-investigate">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                <span id="ai-btn-investigate-text">Agent Tự Điều Tra &amp; Báo Cáo (ReAct)</span>
+              </button>
+            </div>
+
+            <div class="ai-feed-box" id="ai-feed-box">
+              <div style="color: #64748b; text-align: center; margin: auto; padding: 30px 0;">
+                Nhập nội dung ticket hoặc yêu cầu ở trên và chọn một trong hai chế độ xử lý.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột Phải: Lịch Sử Phiên & Mở Phiên Mới -->
+        <div class="ai-pane ai-history-pane" id="ai-history-pane">
+          <div class="ai-pane-header">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span class="ai-pane-title" style="color: #cbd5e1;">Lịch Sử Phiên</span>
+            </div>
+            <button type="button" class="btn-new-session" id="btn-new-session" title="Tạo phiên sự cố / cuộc trò chuyện mới">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Phiên Mới</span>
+            </button>
+          </div>
+          <div class="ai-pane-content" style="padding: 10px 8px; gap: 8px;">
+            <div class="ai-session-list" id="ai-session-list">
+              <div style="color: #64748b; font-size: 11px; text-align: center; padding: 25px 6px;">
+                Chưa có phiên lưu trữ.<br/>Nhập ticket để bắt đầu phiên mới.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CẤU HÌNH API & PROVIDER (POPUP SETTINGS) -->
+    <div class="ai-modal-backdrop" id="ai-settings-backdrop">
+      <div class="ai-modal-card" role="dialog" aria-modal="true">
+        <div class="ai-modal-head">
+          <div class="ai-modal-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Cài Đặt API Provider &amp; Model Suy Nghĩ</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="ai-modal-close" id="ai-modal-close">&times;</button>
+          </div>
+        </div>
+
+        <div class="ai-modal-body">
+          <!-- Provider Tabs -->
+          <div class="ai-prov-tabs">
+            <button type="button" class="ai-prov-tab active" data-tab="deepseek">⚡ DeepSeek (Khuyên Dùng)</button>
+            <button type="button" class="ai-prov-tab" data-tab="chatgpt_browser">🤖 ChatGPT (Browser)</button>
+            <button type="button" class="ai-prov-tab" data-tab="openai">🔑 OpenAI (API Key)</button>
+            <button type="button" class="ai-prov-tab" data-tab="claude">🔮 Anthropic Claude</button>
+            <button type="button" class="ai-prov-tab" data-tab="custom">🌐 Tùy Chỉnh (Compatible)</button>
+            <button type="button" class="ai-prov-tab" data-tab="email">📧 Báo Cáo &amp; Email (SMTP)</button>
+          </div>
+
+          <!-- Tab Content: DeepSeek -->
+          <div class="ai-tab-panel" id="panel-deepseek">
+            <div class="ai-form-group">
+              <label class="ai-form-label">
+                <span>DeepSeek API Key</span>
+                <span style="color:#22d3ee; font-size:10.5px;">✓ Đang ưu tiên kết nối</span>
+              </label>
+              <input type="password" class="ai-form-input" id="cfg-deepseek-key" value="" placeholder="sk-..." />
+              <div class="ai-form-note">Dùng trực tiếp qua API chính thức của DeepSeek (Tự động lấy danh sách model từ API).</div>
+            </div>
+            <div class="ai-form-group">
+              <label class="ai-form-label">Base URL</label>
+              <input type="text" class="ai-form-input" id="cfg-deepseek-url" value="https://api.deepseek.com" />
+            </div>
+            <div class="ai-form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="ai-form-label" style="margin:0;">Model Mặc Định</label>
+                <button type="button" class="btn-reload-models" data-prov="deepseek" style="background:transparent; border:0; color:#22d3ee; font-size:10.5px; cursor:pointer;">
+                  🔄 Tải lại danh sách từ API
+                </button>
+              </div>
+              <select class="ai-form-input" id="cfg-deepseek-model">
+                <option value="">Đang tải model từ API...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tab Content: ChatGPT Browser -->
+          <div class="ai-tab-panel" id="panel-chatgpt_browser" style="display:none;">
+            <div style="background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.25); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700; color:#22d3ee; font-size:12px;">Tài Khoản ChatGPT (Browser)</span>
+                <span id="cfg-oc-status" style="font-size:11px; padding:2px 7px; border-radius:4px; background:rgba(16,185,129,0.2); color:#34d399;">ChatGPT Sẵn Sàng</span>
+              </div>
+              <div style="color:#cbd5e1; font-size:11.5px; margin-top:5px; line-height:1.5;">
+                Hệ thống tự động sử dụng phiên đăng nhập ChatGPT trên trình duyệt của bạn (Team / Plus / Free) để suy luận mà không cần nạp tiền API!
+              </div>
+              <div style="margin-top: 10px;">
+                <button type="button" id="btn-login-chatgpt-browser" style="padding: 6px 14px; border-radius: 6px; background: #22d3ee; border:0; color:#020617; font-weight:700; font-size:11.5px; cursor:pointer;">
+                  🌐 Đăng Nhập / Xác Thực Lại ChatGPT
+                </button>
+              </div>
+            </div>
+            <div class="ai-form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="ai-form-label" style="margin:0;">Model Suy Nghĩ</label>
+                <button type="button" class="btn-reload-models" data-prov="chatgpt_browser" style="background:transparent; border:0; color:#22d3ee; font-size:10.5px; cursor:pointer;">
+                  🔄 Tải lại danh sách từ API
+                </button>
+              </div>
+              <select class="ai-form-input" id="cfg-chatgpt-model">
+                <option value="">Đang tải model từ API...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tab Content: OpenAI API Key -->
+          <div class="ai-tab-panel" id="panel-openai" style="display:none;">
+            <div class="ai-form-group">
+              <label class="ai-form-label">OpenAI API Key</label>
+              <input type="password" class="ai-form-input" id="cfg-openai-key" placeholder="sk-proj-..." />
+              <div class="ai-form-note">Dùng API Key trả phí chính thức từ platform.openai.com.</div>
+            </div>
+            <div class="ai-form-group">
+              <label class="ai-form-label">Base URL</label>
+              <input type="text" class="ai-form-input" id="cfg-openai-url" value="https://api.openai.com/v1" />
+              <div class="ai-form-note">Có thể đổi sang reverse proxy (OAIFree, Pandora, Cloudflare Gateway...).</div>
+            </div>
+            <div class="ai-form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="ai-form-label" style="margin:0;">Model</label>
+                <button type="button" class="btn-reload-models" data-prov="openai" style="background:transparent; border:0; color:#22d3ee; font-size:10.5px; cursor:pointer;">
+                  🔄 Tải lại từ API
+                </button>
+              </div>
+              <select class="ai-form-input" id="cfg-openai-model">
+                <option value="">Chưa có API Key hoặc chưa tải...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tab Content: Anthropic Claude -->
+          <div class="ai-tab-panel" id="panel-claude" style="display:none;">
+            <div class="ai-form-group">
+              <label class="ai-form-label">Anthropic API Key</label>
+              <input type="password" class="ai-form-input" id="cfg-claude-key" placeholder="sk-ant-..." />
+            </div>
+            <div class="ai-form-group">
+              <label class="ai-form-label">Base URL</label>
+              <input type="text" class="ai-form-input" id="cfg-claude-url" value="https://api.anthropic.com" />
+            </div>
+            <div class="ai-form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="ai-form-label" style="margin:0;">Model</label>
+                <button type="button" class="btn-reload-models" data-prov="claude" style="background:transparent; border:0; color:#22d3ee; font-size:10.5px; cursor:pointer;">
+                  🔄 Tải lại từ API
+                </button>
+              </div>
+              <select class="ai-form-input" id="cfg-claude-model">
+                <option value="">Chưa có API Key hoặc chưa tải...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tab Content: Custom Compatible -->
+          <div class="ai-tab-panel" id="panel-custom" style="display:none;">
+            <div class="ai-form-group">
+              <label class="ai-form-label">Giao Thức (Protocol)</label>
+              <select class="ai-form-input" id="cfg-custom-proto">
+                <option value="openai">OpenAI Compatible (Ollama, vLLM, OpenRouter, Groq, LiteLLM...)</option>
+                <option value="anthropic">Anthropic Compatible</option>
+              </select>
+            </div>
+            <div class="ai-form-group">
+              <label class="ai-form-label">Base URL</label>
+              <input type="text" class="ai-form-input" id="cfg-custom-url" placeholder="http://localhost:11434/v1" />
+            </div>
+            <div class="ai-form-group">
+              <label class="ai-form-label">API Key (Nếu cần)</label>
+              <input type="password" class="ai-form-input" id="cfg-custom-key" placeholder="Để trống nếu là Ollama local" />
+            </div>
+            <div class="ai-form-group">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <label class="ai-form-label" style="margin:0;">Tên Model</label>
+                <button type="button" class="btn-reload-models" data-prov="custom" style="background:transparent; border:0; color:#22d3ee; font-size:10.5px; cursor:pointer;">
+                  🔄 Tải từ endpoint
+                </button>
+              </div>
+              <input type="text" class="ai-form-input" id="cfg-custom-model" placeholder="Ví dụ: qwen2.5:32b, llama-3.3-70b-versatile" />
+            </div>
+          </div>
+
+          <!-- Tab Content: Email & SMTP Settings -->
+          <div class="ai-tab-panel" id="panel-email" style="display:none;">
+            <div style="background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;">
+              <div style="font-weight:700; color:#38bdf8; font-size:12px; display:flex; align-items:center; gap:6px;">
+                <span>📧 Tự Động Gửi Email Báo Cáo Sự Cố NOC</span>
+              </div>
+              <div style="color:#cbd5e1; font-size:11.5px; margin-top:4px; line-height:1.5;">
+                Sau khi Agent phân tích hoặc điều tra ReAct xong, báo cáo Markdown &amp; bằng chứng kỹ thuật sẽ được gửi trực tiếp tới email người nhận.
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+              <div class="ai-form-group">
+                <label class="ai-form-label">Máy Chủ SMTP (Host)</label>
+                <input type="text" class="ai-form-input" id="cfg-email-host" value="smtp.gmail.com" />
+              </div>
+              <div class="ai-form-group">
+                <label class="ai-form-label">Cổng (Port)</label>
+                <input type="number" class="ai-form-input" id="cfg-email-port" value="587" />
+              </div>
+            </div>
+
+            <div class="ai-form-group">
+              <label class="ai-form-label">Email Người Gửi (Gmail)</label>
+              <input type="email" class="ai-form-input" id="cfg-email-sender" value="watershoputetea@gmail.com" />
+            </div>
+
+            <div class="ai-form-group">
+              <label class="ai-form-label">
+                <span>Mật Khẩu Ứng Dụng Gmail (App Password - 16 ký tự)</span>
+                <span style="color:#f59e0b; font-size:10.5px;">⚠️ Bắt buộc dùng App Password</span>
+              </label>
+              <input type="password" class="ai-form-input" id="cfg-email-password" placeholder="Nhập 16 chữ cái (ví dụ: abcd efgh ijkl mnop)" />
+              <div class="ai-form-note" style="color:#94a3b8; font-size:10.5px; margin-top:3px;">
+                Vào <strong>Google Account</strong> &gt; <strong>Bảo mật</strong> &gt; Bật xác minh 2 bước &gt; <strong>Mật khẩu ứng dụng</strong> để tạo mật mã 16 chữ cái.
+              </div>
+            </div>
+
+            <div class="ai-form-group">
+              <label class="ai-form-label">Email Người Nhận Báo Cáo (Recipient)</label>
+              <input type="text" class="ai-form-input" id="cfg-email-recipient" value="thongvv5@fpt.com" placeholder="thongvv5@fpt.com" />
+              <div class="ai-form-note">Có thể nhập nhiều email phân cách bằng dấu phẩy.</div>
+            </div>
+
+            <div class="ai-form-group" style="margin-top:14px; background:rgba(15,23,42,0.5); padding:10px; border-radius:6px; border:1px solid rgba(148,163,184,0.15);">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:#e2e8f0; font-weight:600; margin:0;">
+                <input type="checkbox" id="cfg-email-autosend" style="width:15px; height:15px; cursor:pointer;" />
+                <span>Tự động gửi email sau khi Agent hoàn thành điều tra ReAct</span>
+              </label>
+            </div>
+
+            <div style="margin-top:12px; display:flex; align-items:center; gap:8px;">
+              <button type="button" id="btn-test-email" style="padding: 7px 14px; border-radius: 6px; background: rgba(14,165,233,0.15); border: 1px solid rgba(14,165,233,0.4); color:#38bdf8; font-size: 11.5px; font-weight:600; cursor:pointer;">
+                🧪 Gửi Thử 1 Email Kiểm Tra
+              </button>
+              <span id="email-test-status" style="font-size:11px;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-modal-foot">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btn-test-connection" style="padding: 7px 14px; border-radius: 7px; background: rgba(30,41,59,0.8); border: 1px solid rgba(148,163,184,0.3); color: #cbd5e1; font-size: 11.5px; font-weight: 600; cursor: pointer;">
+              🧪 Kiểm Tra Kết Nối
+            </button>
+            <span class="ai-test-badge" id="ai-test-badge"></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" id="btn-close-settings" style="padding: 7px 14px; border-radius: 7px; background: transparent; border: 1px solid rgba(148,163,184,0.2); color: #94a3b8; font-size: 11.5px; cursor: pointer;">
+              Đóng
+            </button>
+            <button type="button" id="btn-save-settings" style="padding: 7px 18px; border-radius: 7px; background: #22d3ee; border: 0; color: #020617; font-weight: 700; font-size: 11.5px; cursor: pointer;">
+              💾 Lưu Cấu Hình &amp; Đặt Làm Mặc Định
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        let agentToken = "";
+        let currentConfig = null;
+        let activeTab = "deepseek";
+
+        // Hàm lấy token hợp lệ (tự động làm mới nếu server khởi động lại)
+        async function getValidToken(forceRefresh = false) {
+          if (!agentToken || forceRefresh) {
+            try {
+              const res = await fetch('/api/bootstrap');
+              const data = await res.json();
+              if (data && data.token) {
+                agentToken = data.token;
+              }
+            } catch (e) {}
+          }
+          return agentToken;
+        }
+
+        // Wrapper fetch có cơ chế tự động phục hồi token khi gặp 401
+        async function agentFetch(url, options = {}) {
+          let tok = await getValidToken();
+          options.headers = options.headers || {};
+          options.headers['x-web-console-token'] = tok;
+
+          let res = await fetch(url, options);
+          if (res.status === 401) {
+            // Token bị lệch do server đã restart, tự động cập nhật token mới và gọi lại
+            tok = await getValidToken(true);
+            options.headers['x-web-console-token'] = tok;
+            res = await fetch(url, options);
+          }
+          return res;
+        }
+
+        // Khởi động lấy token và nạp cấu hình ban đầu
+        getValidToken().then(() => {
+          loadInventoryPreview();
+          loadAgentConfig();
+        });
+
+        // -------------------------------------------------------------
+        // 1. ĐIỀU HƯỚNG SPA CHO /ai
+        // -------------------------------------------------------------
+        function handleRoute() {
+          const path = window.location.pathname;
+          const isAi = path === '/ai' || path.startsWith('/ai/');
+          const isIa = path === '/ia' || path.startsWith('/ia/');
+          const rootEl = document.getElementById('root');
+          const aiWorkspace = document.getElementById('ai-workspace');
+          const titleText = document.getElementById('ai-title-text');
+          const subtitleText = document.getElementById('ai-subtitle-text');
+          const leftTitle = document.getElementById('ai-left-title');
+          const leftSub = document.getElementById('ai-left-sub');
+          const btnAnalyzeText = document.getElementById('ai-btn-analyze-text');
+          const btnInvestigateText = document.getElementById('ai-btn-investigate-text');
+          const ticketInput = document.getElementById('ai-ticket-input');
+
+          if (isAi || isIa) {
+            if (rootEl) rootEl.style.display = 'none';
+            if (aiWorkspace) {
+              aiWorkspace.style.display = 'flex';
+              if (isIa) {
+                aiWorkspace.classList.add('mode-ia');
+                aiWorkspace.classList.remove('mode-ai');
+                document.title = 'NOC Incident Diagnostic & Command Generator';
+                if (titleText) titleText.textContent = 'Hệ Thống Chuẩn Đoán & Tự Động Tạo Lệnh NOC';
+                if (subtitleText) subtitleText.textContent = 'Quy trình phân tích nguyên nhân & chuẩn bị lệnh kiểm tra thiết bị an toàn';
+                if (leftTitle) leftTitle.textContent = 'Nội Dung Yêu Cầu / Ticket Sự Cố';
+                if (leftSub) leftSub.textContent = 'Chế độ an toàn: Chỉ đọc (Netmiko Read-Only)';
+                if (btnAnalyzeText) btnAnalyzeText.textContent = 'Phân Tích & Chuẩn Bị Lệnh';
+                if (btnInvestigateText) btnInvestigateText.textContent = 'Tự Động Thu Thập & Lập Báo Cáo';
+                if (ticketInput) ticketInput.placeholder = 'Dán nội dung ticket hoặc cảnh báo mạng cần kiểm tra (ví dụ: Interface xe-0/0/0 trên AGG-AggPE-01-01 flapping, CRC error, BGP down, packet drops...)...';
+              } else {
+                aiWorkspace.classList.add('mode-ai');
+                aiWorkspace.classList.remove('mode-ia');
+                document.title = 'Incident Reasoning & Investigation · AI Console';
+                if (titleText) titleText.textContent = 'Incident Reasoning & Investigation Engine';
+                if (subtitleText) subtitleText.textContent = 'Autonomous Reasoning over Netmiko MCP';
+                if (leftTitle) leftTitle.textContent = 'Nội Dung Yêu Cầu / Ticket Sự Cố';
+                if (leftSub) leftSub.textContent = 'Chế độ an toàn: Chỉ đọc (Read-Only)';
+                if (btnAnalyzeText) btnAnalyzeText.textContent = 'Phân Tích & Chuẩn Bị Lệnh';
+                if (btnInvestigateText) btnInvestigateText.textContent = 'Agent Tự Điều Tra & Báo Cáo (ReAct)';
+                if (ticketInput) ticketInput.placeholder = 'Ví dụ: Ticket INC-9021: Router AGG-AggPE-01-01 báo rớt kết nối quốc tế, nghi ngờ flapping BGP và lỗi trên interface xe-0/0/0. Kiểm tra giúp tôi...';
+              }
+              try { renderSessionList(); } catch (e) {}
+            }
+            if (ticketInput) setTimeout(() => ticketInput.focus(), 80);
+          } else {
+            if (rootEl) rootEl.style.display = '';
+            if (aiWorkspace) aiWorkspace.style.display = 'none';
+            document.title = 'Netmiko Web Console · NOC';
+          }
+        }
+
+        function navigateTo(url) {
+          if (window.location.pathname !== url) {
+            window.history.pushState(null, '', url);
+            handleRoute();
+          }
+        }
+
+        window.addEventListener('popstate', handleRoute);
+        handleRoute();
+
+        const btnBack = document.getElementById('ai-btn-back');
+        if (btnBack) {
+          btnBack.addEventListener('click', () => navigateTo('/'));
+        }
+
+        // -------------------------------------------------------------
+        // 2. CHÈN NÚT CHỮ "A" VÀ "I" KÍN ĐÁO TRÊN TOPBAR (A -> /ai, I -> /ia)
+        // -------------------------------------------------------------
+        function injectStealthButton() {
+          const topbarActions = document.querySelector('.topbar-actions');
+          if (!topbarActions) return;
+
+          let btnA = document.getElementById('btn-stealth-a');
+          let btnI = document.getElementById('btn-stealth-i');
+
+          if (!btnI) {
+            btnI = document.createElement('button');
+            btnI.type = 'button';
+            btnI.id = 'btn-stealth-i';
+            btnI.className = 'btn-stealth-i';
+            btnI.textContent = 'I';
+            btnI.setAttribute('aria-label', 'I');
+            btnI.title = 'I';
+            btnI.addEventListener('click', (e) => {
+              e.preventDefault();
+              navigateTo('/ia');
+            });
+            topbarActions.insertBefore(btnI, topbarActions.firstChild);
+          }
+
+          if (!btnA) {
+            btnA = document.createElement('button');
+            btnA.type = 'button';
+            btnA.id = 'btn-stealth-a';
+            btnA.className = 'btn-stealth-a';
+            btnA.textContent = '';
+            btnA.removeAttribute('title');
+            btnA.setAttribute('aria-hidden', 'true');
+            btnA.tabIndex = -1;
+            btnA.addEventListener('click', (e) => {
+              e.preventDefault();
+              navigateTo('/ai');
+            });
+            topbarActions.insertBefore(btnA, btnI);
+          }
+        }
+
+        let attempts = 0;
+        const interval = setInterval(() => {
+          injectStealthButton();
+          attempts++;
+          if (attempts > 30) clearInterval(interval);
+        }, 300);
+
+        // -------------------------------------------------------------
+        // 3. QUẢN LÝ CẤU HÌNH API PROVIDER & MODEL
+        // -------------------------------------------------------------
+        const quickModelSelect = document.getElementById('ai-quick-model');
+        const reasoningEffortSelect = document.getElementById('ai-reasoning-effort');
+        const agentIndicator = document.getElementById('ai-agent-indicator');
+        const settingsBackdrop = document.getElementById('ai-settings-backdrop');
+        const btnOpenSettings = document.getElementById('btn-open-ai-settings');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const modalClose = document.getElementById('ai-modal-close');
+        const testBadge = document.getElementById('ai-test-badge');
+
+        async function loadAgentConfig() {
+          try {
+            const res = await agentFetch('/api/agent/config');
+            const data = await res.json();
+            currentConfig = data;
+            renderConfigInUI(data);
+          } catch (e) {}
+        }
+
+        function updateReasoningEffortState() {
+          if (!quickModelSelect || !reasoningEffortSelect) return;
+          const selectedOpt = quickModelSelect.options[quickModelSelect.selectedIndex];
+          const isReasoning = selectedOpt ? selectedOpt.getAttribute('data-reasoning') === '1' : true;
+
+          if (!isReasoning) {
+            reasoningEffortSelect.disabled = true;
+            reasoningEffortSelect.style.opacity = '0.45';
+            reasoningEffortSelect.title = 'Model này không có chế độ suy nghĩ sâu (CoT)';
+          } else {
+            reasoningEffortSelect.disabled = false;
+            reasoningEffortSelect.style.opacity = '1';
+            reasoningEffortSelect.title = 'Mức độ suy nghĩ: Sâu (Deep) / Vừa (Medium) / Nhanh (Fast)';
+          }
+        }
+
+        function renderConfigInUI(cfg) {
+          if (!cfg) return;
+          const activeProv = cfg.active_provider || 'deepseek';
+          const activeModel = cfg.active_model || 'deepseek-flash';
+          const reasoningEffort = cfg.reasoning_effort || 'high';
+
+          // 1. Cập nhật Quick Model Selector CHỈ VỚI NHỮNG PROVIDER ĐÃ CÀI ĐẶT / GẮN API KEY
+          if (quickModelSelect) {
+            const configuredList = cfg.configured_providers || [];
+            let html = '';
+            let currentSelected = `${activeProv}:${activeModel}`;
+            let hasSelected = false;
+
+            if (configuredList.length > 0) {
+              configuredList.forEach(p => {
+                html += `<optgroup label="⚡ ${p.provider_name} (${p.badge})">`;
+                (p.models || []).forEach(m => {
+                  const val = `${p.provider}:${m.id}`;
+                  const isSel = (val === currentSelected || (p.provider === activeProv && m.id === activeModel));
+                  if (isSel) hasSelected = true;
+                  html += `<option value="${val}" data-reasoning="${m.reasoning ? '1' : '0'}" ${isSel ? 'selected' : ''}>${m.reasoning ? '🧠 ' : '⚡ '}${m.name}</option>`;
+                });
+                html += `</optgroup>`;
+              });
+            } else {
+              html = `<option value="">Đang tải cấu hình...</option>`;
+              hasSelected = true;
+            }
+
+            quickModelSelect.innerHTML = html;
+
+            if (!hasSelected && quickModelSelect.options.length > 0) {
+              quickModelSelect.selectedIndex = 0;
+            }
+          }
+
+          // 2. Cập nhật Mức suy nghĩ (Reasoning Effort)
+          if (reasoningEffortSelect) {
+            reasoningEffortSelect.value = reasoningEffort;
+            updateReasoningEffortState();
+          }
+
+          // 3. Cập nhật indicator
+          if (agentIndicator) {
+            const pName = (cfg.providers && cfg.providers[activeProv] && cfg.providers[activeProv].name) || activeProv;
+            agentIndicator.textContent = `${pName} · ${activeModel}`;
+          }
+
+          // Điền dữ liệu vào form settings
+          const providers = cfg.providers || {};
+          if (providers.deepseek) {
+            if (document.getElementById('cfg-deepseek-key')) document.getElementById('cfg-deepseek-key').value = providers.deepseek.masked_key || '';
+            if (document.getElementById('cfg-deepseek-url')) document.getElementById('cfg-deepseek-url').value = providers.deepseek.base_url || 'https://api.deepseek.com';
+            const dsSelect = document.getElementById('cfg-deepseek-model');
+            if (dsSelect) {
+              const dsModels = providers.deepseek.available_models || [];
+              if (dsModels.length > 0) {
+                const cur = providers.deepseek.model || dsModels[0].id;
+                dsSelect.innerHTML = dsModels.map(m => `<option value="${m.id}" ${m.id === cur ? 'selected' : ''}>${m.name} ${m.reasoning ? '🧠' : ''}</option>`).join('');
+              } else {
+                dsSelect.innerHTML = `<option value="">Chưa có model từ API...</option>`;
+              }
+            }
+          }
+          if (providers.chatgpt_browser) {
+            const ocStatus = document.getElementById('cfg-oc-status');
+            if (ocStatus) {
+              ocStatus.textContent = cfg.opencode_running ? 'ChatGPT Sẵn Sàng (Connected)' : 'Chưa Kết Nối Trình Duyệt';
+              ocStatus.style.background = cfg.opencode_running ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)';
+              ocStatus.style.color = cfg.opencode_running ? '#34d399' : '#fb7185';
+            }
+            const cbSelect = document.getElementById('cfg-chatgpt-model');
+            if (cbSelect) {
+              const cbModels = providers.chatgpt_browser.available_models || [];
+              if (cbModels.length > 0) {
+                const cur = providers.chatgpt_browser.model || cbModels[0].id;
+                cbSelect.innerHTML = cbModels.map(m => `<option value="${m.id}" ${m.id === cur ? 'selected' : ''}>${m.name} ${m.reasoning ? '🧠' : ''}</option>`).join('');
+              } else {
+                cbSelect.innerHTML = `<option value="">Đang tải danh sách model ChatGPT...</option>`;
+              }
+            }
+          }
+          if (providers.openai) {
+            if (document.getElementById('cfg-openai-key')) document.getElementById('cfg-openai-key').value = providers.openai.masked_key || '';
+            if (document.getElementById('cfg-openai-url')) document.getElementById('cfg-openai-url').value = providers.openai.base_url || 'https://api.openai.com/v1';
+            const oaSelect = document.getElementById('cfg-openai-model');
+            if (oaSelect) {
+              const oaModels = providers.openai.available_models || [];
+              if (oaModels.length > 0) {
+                const cur = providers.openai.model || oaModels[0].id;
+                oaSelect.innerHTML = oaModels.map(m => `<option value="${m.id}" ${m.id === cur ? 'selected' : ''}>${m.name} ${m.reasoning ? '🧠' : ''}</option>`).join('');
+              } else {
+                oaSelect.innerHTML = `<option value="">Chưa nạp API Key để lấy model...</option>`;
+              }
+            }
+          }
+          if (providers.claude) {
+            if (document.getElementById('cfg-claude-key')) document.getElementById('cfg-claude-key').value = providers.claude.masked_key || '';
+            if (document.getElementById('cfg-claude-url')) document.getElementById('cfg-claude-url').value = providers.claude.base_url || 'https://api.anthropic.com';
+            const clSelect = document.getElementById('cfg-claude-model');
+            if (clSelect) {
+              const clModels = providers.claude.available_models || [];
+              if (clModels.length > 0) {
+                const cur = providers.claude.model || clModels[0].id;
+                clSelect.innerHTML = clModels.map(m => `<option value="${m.id}" ${m.id === cur ? 'selected' : ''}>${m.name} ${m.reasoning ? '🧠' : ''}</option>`).join('');
+              } else {
+                clSelect.innerHTML = `<option value="">Chưa nạp API Key để lấy model...</option>`;
+              }
+            }
+          }
+          if (providers.custom) {
+            if (document.getElementById('cfg-custom-proto')) document.getElementById('cfg-custom-proto').value = providers.custom.protocol || 'openai';
+            if (document.getElementById('cfg-custom-url')) document.getElementById('cfg-custom-url').value = providers.custom.base_url || 'http://localhost:11434/v1';
+            if (document.getElementById('cfg-custom-key')) document.getElementById('cfg-custom-key').value = providers.custom.masked_key || '';
+            if (document.getElementById('cfg-custom-model')) document.getElementById('cfg-custom-model').value = providers.custom.model || 'qwen2.5:32b';
+          }
+
+          // Cập nhật cấu hình Email SMTP
+          if (cfg.email) {
+            if (document.getElementById('cfg-email-host')) document.getElementById('cfg-email-host').value = cfg.email.host || 'smtp.gmail.com';
+            if (document.getElementById('cfg-email-port')) document.getElementById('cfg-email-port').value = cfg.email.port || 587;
+            if (document.getElementById('cfg-email-sender')) document.getElementById('cfg-email-sender').value = cfg.email.sender || 'watershoputetea@gmail.com';
+            if (document.getElementById('cfg-email-password') && cfg.email.masked_password) {
+              document.getElementById('cfg-email-password').placeholder = cfg.email.masked_password;
+            }
+            if (document.getElementById('cfg-email-recipient')) document.getElementById('cfg-email-recipient').value = cfg.email.recipient || 'thongvv5@fpt.com';
+            if (document.getElementById('cfg-email-autosend')) document.getElementById('cfg-email-autosend').checked = !!cfg.email.auto_send;
+          }
+        }
+
+        // Tải danh sách model động từ API
+        async function fetchModelsFromAPI(provider) {
+          try {
+            const res = await agentFetch(`/api/agent/models?provider=${provider}`);
+            const data = await res.json();
+            return data.models || [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        // Click nút tải lại danh sách model trong từng tab
+        document.querySelectorAll('.btn-reload-models').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const prov = btn.dataset.prov;
+            btn.textContent = '⏳ Đang tải...';
+            const models = await fetchModelsFromAPI(prov);
+            btn.textContent = '🔄 Tải lại từ API';
+
+            const selectEl = document.getElementById(`cfg-${prov}-model`);
+            if (selectEl && models.length > 0) {
+              const currentVal = selectEl.value;
+              selectEl.innerHTML = models.map(m => `
+                <option value="${m.id}" ${m.id === currentVal ? 'selected' : ''}>
+                  ${m.name} ${m.reasoning ? '🧠' : ''}
+                </option>
+              `).join('');
+            }
+            await loadAgentConfig();
+          });
+        });
+
+        // Đổi mức suy nghĩ ngay trên header
+        if (reasoningEffortSelect) {
+          reasoningEffortSelect.addEventListener('change', async () => {
+            const effort = reasoningEffortSelect.value;
+            try {
+              await agentFetch('/api/agent/config', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  reasoning_effort: effort
+                })
+              });
+              if (currentConfig) currentConfig.reasoning_effort = effort;
+            } catch (e) {}
+          });
+        }
+
+        // Đổi model nhanh ngay trên header
+        if (quickModelSelect) {
+          quickModelSelect.addEventListener('change', async () => {
+            const val = quickModelSelect.value;
+            const parts = val.split(':');
+            const prov = parts[0];
+            const model = parts.slice(1).join(':');
+
+            updateReasoningEffortState();
+
+            try {
+              const res = await agentFetch('/api/agent/config', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  active_provider: prov,
+                  active_model: model
+                })
+              });
+              const data = await res.json();
+              currentConfig = data;
+              if (agentIndicator) {
+                const pName = (data.providers && data.providers[prov] && data.providers[prov].name) || prov;
+                agentIndicator.textContent = `${pName} · ${model}`;
+              }
+            } catch (e) {}
+          });
+        }
+
+        function openSettingsModal() {
+          if (settingsBackdrop) settingsBackdrop.classList.add('open');
+          if (currentConfig && currentConfig.active_provider) {
+            switchTab(currentConfig.active_provider);
+          }
+        }
+        function closeSettingsModal() {
+          if (settingsBackdrop) settingsBackdrop.classList.remove('open');
+          if (testBadge) testBadge.className = 'ai-test-badge';
+        }
+
+        if (btnOpenSettings) btnOpenSettings.addEventListener('click', openSettingsModal);
+        if (btnCloseSettings) btnCloseSettings.addEventListener('click', closeSettingsModal);
+        if (modalClose) modalClose.addEventListener('click', closeSettingsModal);
+        if (settingsBackdrop) {
+          settingsBackdrop.addEventListener('click', (e) => {
+            if (e.target === settingsBackdrop) closeSettingsModal();
+          });
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+          activeTab = tabId;
+          document.querySelectorAll('.ai-prov-tab').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === tabId);
+          });
+          document.querySelectorAll('.ai-tab-panel').forEach(p => {
+            p.style.display = p.id === `panel-${tabId}` ? 'block' : 'none';
+          });
+        }
+        document.querySelectorAll('.ai-prov-tab').forEach(btn => {
+          btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+        });
+
+        // Nút Kiểm Tra Kết Nối (Test)
+        const btnTest = document.getElementById('btn-test-connection');
+        if (btnTest) {
+          btnTest.addEventListener('click', async () => {
+            let modelToTest = "";
+            if (activeTab === 'deepseek') modelToTest = document.getElementById('cfg-deepseek-model').value;
+            else if (activeTab === 'chatgpt_browser') modelToTest = document.getElementById('cfg-chatgpt-model').value;
+            else if (activeTab === 'openai') modelToTest = document.getElementById('cfg-openai-model').value;
+            else if (activeTab === 'claude') modelToTest = document.getElementById('cfg-claude-model').value;
+            else if (activeTab === 'custom') modelToTest = document.getElementById('cfg-custom-model').value;
+
+            testBadge.className = 'ai-test-badge loading';
+            testBadge.textContent = '⏳ Đang kiểm tra...';
+
+            try {
+              const res = await agentFetch('/api/agent/test', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  provider: activeTab,
+                  model: modelToTest
+                })
+              });
+              const data = await res.json();
+              if (data.ok) {
+                testBadge.className = 'ai-test-badge ok';
+                const reasonTag = data.reasoning_snippet ? ' (Có luồng Reasoning)' : '';
+                testBadge.textContent = `✅ Thành công (${data.latency_ms}ms)${reasonTag}: ${data.reply}`;
+              } else {
+                testBadge.className = 'ai-test-badge err';
+                testBadge.textContent = `❌ Lỗi: ${data.error || 'Thất bại'}`;
+              }
+            } catch (err) {
+              testBadge.className = 'ai-test-badge err';
+              testBadge.textContent = `❌ Lỗi: ${err.message}`;
+            }
+          });
+        }
+
+
+        // Nút Đăng Nhập ChatGPT Qua Browser
+        const btnLoginChatGPT = document.getElementById('btn-login-chatgpt-browser');
+        if (btnLoginChatGPT) {
+          btnLoginChatGPT.addEventListener('click', async () => {
+            try {
+              const res = await agentFetch('/api/agent/login_chatgpt_browser', {
+                method: 'POST'
+              });
+              const data = await res.json();
+              if (data.ok && data.auth_url) {
+                window.open(data.auth_url, '_blank');
+              } else {
+                alert(data.message || 'Không thể tạo liên kết đăng nhập. Đảm bảo phiên trình duyệt ChatGPT đang hoạt động.');
+              }
+            } catch (err) {
+              alert('Lỗi: ' + err.message);
+            }
+          });
+        }
+
+        // Nút Lưu Cấu Hình
+        const btnSaveSettings = document.getElementById('btn-save-settings');
+        if (btnSaveSettings) {
+          btnSaveSettings.addEventListener('click', async () => {
+            let provToSave = activeTab === 'email' ? (currentConfig?.active_provider || 'deepseek') : activeTab;
+            let activeModel = "";
+            if (provToSave === 'deepseek') activeModel = document.getElementById('cfg-deepseek-model').value;
+            else if (provToSave === 'chatgpt_browser') activeModel = document.getElementById('cfg-chatgpt-model').value;
+            else if (provToSave === 'openai') activeModel = document.getElementById('cfg-openai-model').value;
+            else if (provToSave === 'claude') activeModel = document.getElementById('cfg-claude-model').value;
+            else if (provToSave === 'custom') activeModel = document.getElementById('cfg-custom-model').value;
+
+            const emailPayload = {
+              host: document.getElementById('cfg-email-host').value,
+              port: parseInt(document.getElementById('cfg-email-port').value || '587', 10),
+              sender: document.getElementById('cfg-email-sender').value,
+              password: document.getElementById('cfg-email-password').value,
+              recipient: document.getElementById('cfg-email-recipient').value,
+              auto_send: document.getElementById('cfg-email-autosend').checked
+            };
+
+            const payload = {
+              active_provider: provToSave,
+              active_model: activeModel,
+              reasoning_effort: reasoningEffortSelect ? reasoningEffortSelect.value : 'high',
+              email: emailPayload,
+              providers: {
+                deepseek: {
+                  api_key: document.getElementById('cfg-deepseek-key').value,
+                  base_url: document.getElementById('cfg-deepseek-url').value,
+                  model: document.getElementById('cfg-deepseek-model').value
+                },
+                chatgpt_browser: {
+                  model: document.getElementById('cfg-chatgpt-model').value
+                },
+                openai: {
+                  api_key: document.getElementById('cfg-openai-key').value,
+                  base_url: document.getElementById('cfg-openai-url').value,
+                  model: document.getElementById('cfg-openai-model').value
+                },
+                claude: {
+                  api_key: document.getElementById('cfg-claude-key').value,
+                  base_url: document.getElementById('cfg-claude-url').value,
+                  model: document.getElementById('cfg-claude-model').value
+                },
+                custom: {
+                  protocol: document.getElementById('cfg-custom-proto').value,
+                  base_url: document.getElementById('cfg-custom-url').value,
+                  api_key: document.getElementById('cfg-custom-key').value,
+                  model: document.getElementById('cfg-custom-model').value
+                }
+              }
+            };
+
+            btnSaveSettings.textContent = '⏳ Đang lưu...';
+            try {
+              const res = await agentFetch('/api/agent/config', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+              });
+              const data = await res.json();
+              currentConfig = data;
+              renderConfigInUI(data);
+              closeSettingsModal();
+            } catch (err) {
+              alert('Lỗi lưu cấu hình: ' + err.message);
+            } finally {
+              btnSaveSettings.textContent = '💾 Lưu Cấu Hình & Đặt Làm Mặc Định';
+            }
+          });
+        }
+
+        // Nút Gửi Thử 1 Email Kiểm Tra SMTP
+        const btnTestEmail = document.getElementById('btn-test-email');
+        const emailTestStatus = document.getElementById('email-test-status');
+        if (btnTestEmail) {
+          btnTestEmail.addEventListener('click', async () => {
+            btnTestEmail.disabled = true;
+            btnTestEmail.textContent = '⏳ Đang gửi mail test...';
+            if (emailTestStatus) {
+              emailTestStatus.textContent = '';
+              emailTestStatus.style.color = '#38bdf8';
+            }
+            try {
+              const res = await agentFetch('/api/agent/email/test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  host: document.getElementById('cfg-email-host').value,
+                  port: parseInt(document.getElementById('cfg-email-port').value || '587', 10),
+                  sender: document.getElementById('cfg-email-sender').value,
+                  password: document.getElementById('cfg-email-password').value,
+                  recipient: document.getElementById('cfg-email-recipient').value
+                })
+              });
+              const data = await res.json();
+              if (data.ok) {
+                if (emailTestStatus) {
+                  emailTestStatus.textContent = '✅ ' + (data.message || 'Kết nối thành công!');
+                  emailTestStatus.style.color = '#34d399';
+                }
+              } else {
+                if (emailTestStatus) {
+                  emailTestStatus.textContent = '❌ ' + (data.error || 'Thất bại');
+                  emailTestStatus.style.color = '#f87171';
+                }
+              }
+            } catch (err) {
+              if (emailTestStatus) {
+                emailTestStatus.textContent = '❌ Lỗi: ' + err.message;
+                emailTestStatus.style.color = '#f87171';
+              }
+            } finally {
+              btnTestEmail.disabled = false;
+              btnTestEmail.textContent = '🧪 Gửi Thử 1 Email Kiểm Tra';
+            }
+          });
+        }
+
+        // -------------------------------------------------------------
+        // 4. TƯƠNG TÁC TRONG TAB /ai
+        // -------------------------------------------------------------
+        const ticketInput = document.getElementById('ai-ticket-input');
+        const feedBox = document.getElementById('ai-feed-box');
+
+        // Click mẫu sự cố nhanh
+        document.querySelectorAll('.ai-quick-tag').forEach(tag => {
+          tag.addEventListener('click', () => {
+            if (ticketInput) ticketInput.value = tag.dataset.sample;
+          });
+        });
+
+        // Click lệnh chuẩn để dán vào ticket
+        document.querySelectorAll('.ai-cmd-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            if (ticketInput) {
+              const cmd = pill.dataset.cmd;
+              ticketInput.value = ticketInput.value ? `${ticketInput.value}\nLệnh: ${cmd}` : `Lệnh: ${cmd}`;
+            }
+          });
+        });
+
+        function getActivePromptSelection() {
+          const val = quickModelSelect ? quickModelSelect.value : '';
+          const parts = val ? val.split(':') : [];
+          const effort = reasoningEffortSelect ? reasoningEffortSelect.value : (currentConfig && currentConfig.reasoning_effort) || 'high';
+          return {
+            provider: (parts.length > 1 && parts[0] ? parts[0] : (currentConfig && currentConfig.active_provider)) || 'deepseek',
+            model: (parts.length > 1 && parts.slice(1).join(':') ? parts.slice(1).join(':') : (currentConfig && currentConfig.active_model)) || 'deepseek-flash',
+            reasoning_effort: effort
+          };
+        }
+
+        // -------------------------------------------------------------
+        // SESSION & MULTI-TURN CONTEXT MANAGEMENT
+        // -------------------------------------------------------------
+        const SESSIONS_STORAGE_KEY = 'netmiko_ai_sessions_v1';
+        let currentSessionId = null;
+
+        function getStoredSessions() {
+          try {
+            const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+          } catch (e) {
+            return [];
+          }
+        }
+
+        function saveStoredSessions(sessions) {
+          try {
+            localStorage.setItem(SESSIONS_STORAGE_KEY, JSON.stringify(sessions));
+          } catch (e) {}
+        }
+
+        function escapeHtml(str) {
+          if (!str) return '';
+          return str.replace(/[&<>'"]/g, tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+          }[tag] || tag));
+        }
+
+        function renderSessionList() {
+          const listEl = document.getElementById('ai-session-list');
+          if (!listEl) return;
+          const sessions = getStoredSessions();
+
+          if (sessions.length === 0) {
+            listEl.innerHTML = `
+              <div style="color: #64748b; font-size: 11px; text-align: center; padding: 25px 6px;">
+                Chưa có phiên lưu trữ.<br/>Nhập ticket để bắt đầu phiên mới.
+              </div>
+            `;
+            return;
+          }
+
+          let html = '';
+          sessions.forEach(sess => {
+            const isActive = sess.id === currentSessionId;
+            const dateStr = new Date(sess.updatedAt || sess.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' ' + new Date(sess.updatedAt || sess.createdAt).toLocaleDateString([], { month: 'numeric', day: 'numeric' });
+            const msgCount = (sess.messages || []).length;
+            html += `
+              <div class="ai-session-item ${isActive ? 'active' : ''}" data-sess-id="${sess.id}">
+                <div class="ai-session-info">
+                  <div class="ai-session-title" title="${escapeHtml(sess.title)}">${escapeHtml(sess.title)}</div>
+                  <div class="ai-session-meta">
+                    <span>${dateStr}</span>
+                    <span>·</span>
+                    <span>${msgCount} tin</span>
+                  </div>
+                </div>
+                <button type="button" class="ai-session-del" data-del-id="${sess.id}" title="Xóa phiên này">🗑️</button>
+              </div>
+            `;
+          });
+          listEl.innerHTML = html;
+
+          listEl.querySelectorAll('.ai-session-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+              if (e.target.closest('.ai-session-del')) return;
+              const sId = item.dataset.sessId;
+              loadSession(sId);
+            });
+          });
+
+          listEl.querySelectorAll('.ai-session-del').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              const dId = btn.dataset.delId;
+              deleteSession(dId);
+            });
+          });
+        }
+
+        function createNewSession() {
+          currentSessionId = null;
+          if (feedBox) {
+            feedBox.innerHTML = `
+              <div style="color: #64748b; text-align: center; margin: auto; padding: 30px 0;">
+                Nhập nội dung ticket hoặc yêu cầu ở trên để bắt đầu phiên phân tích mới.
+              </div>
+            `;
+          }
+          if (ticketInput) {
+            ticketInput.value = '';
+            ticketInput.placeholder = "Ví dụ: Ticket INC-9021: Router AGG-AggPE-01-01 báo rớt kết nối quốc tế, nghi ngờ flapping BGP và lỗi trên interface xe-0/0/0. Kiểm tra giúp tôi...";
+          }
+          renderSessionList();
+        }
+
+        function loadSession(sessionId) {
+          const sessions = getStoredSessions();
+          const sess = sessions.find(s => s.id === sessionId);
+          if (!sess) return;
+          currentSessionId = sess.id;
+
+          if (feedBox) {
+            feedBox.innerHTML = '';
+            (sess.messages || []).forEach(m => {
+              if (m.role === 'user') {
+                const uDiv = document.createElement('div');
+                uDiv.className = 'ai-feed-user-bubble';
+                uDiv.innerHTML = `<div class="ai-feed-user-meta">👤 Kỹ Sư Vận Hành:</div><div class="ai-feed-user-text">${escapeHtml(m.content)}</div>`;
+                feedBox.appendChild(uDiv);
+              } else if (m.role === 'assistant') {
+                const aDiv = document.createElement('div');
+                aDiv.className = 'ai-feed-item';
+                aDiv.style.flexDirection = 'column';
+                aDiv.innerHTML = m.html || `<div class="ai-report">${m.content}</div>`;
+                feedBox.appendChild(aDiv);
+              }
+            });
+            feedBox.scrollTop = feedBox.scrollHeight;
+          }
+
+          if (ticketInput) {
+            ticketInput.value = '';
+            ticketInput.placeholder = "Nhập câu hỏi tiếp theo để đào sâu sự cố này (ví dụ: kiểm tra thêm interface xe-0/0/1)...";
+          }
+          renderSessionList();
+        }
+
+        function deleteSession(sessionId) {
+          let sessions = getStoredSessions();
+          sessions = sessions.filter(s => s.id !== sessionId);
+          saveStoredSessions(sessions);
+          if (currentSessionId === sessionId) {
+            createNewSession();
+          } else {
+            renderSessionList();
+          }
+        }
+
+        const btnNewSession = document.getElementById('btn-new-session');
+        if (btnNewSession) {
+          btnNewSession.addEventListener('click', createNewSession);
+        }
+
+        // Chế độ 1: Phân tích & Chuẩn bị lệnh (Kèm Multi-turn Memory)
+        const btnAnalyze = document.getElementById('ai-btn-analyze');
+        if (btnAnalyze) {
+          btnAnalyze.addEventListener('click', async () => {
+            const ticket = ticketInput.value.trim();
+            if (!ticket) {
+              alert('Vui lòng nhập hoặc dán nội dung ticket/yêu cầu.');
+              return;
+            }
+
+            const { provider, model, reasoning_effort } = getActivePromptSelection();
+            const isIaMode = document.getElementById('ai-workspace').classList.contains('mode-ia');
+
+            // Quản lý Session
+            let sessions = getStoredSessions();
+            let currentSession = sessions.find(s => s.id === currentSessionId);
+            if (!currentSession) {
+              currentSessionId = 'sess_' + Date.now();
+              const shortTitle = ticket.slice(0, 40).replace(/[\r\n]+/g, ' ') + (ticket.length > 40 ? '...' : '');
+              currentSession = {
+                id: currentSessionId,
+                title: shortTitle,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                messages: []
+              };
+              sessions.unshift(currentSession);
+            } else {
+              currentSession.updatedAt = Date.now();
+            }
+
+            // Xóa lời chào mặc định nếu là tin nhắn đầu tiên
+            if (feedBox && feedBox.querySelector('div[style*="margin: auto"]')) {
+              feedBox.innerHTML = '';
+            }
+
+            // Hiển thị Bubble câu hỏi người dùng
+            const userBubble = document.createElement('div');
+            userBubble.className = 'ai-feed-user-bubble';
+            userBubble.innerHTML = `<div class="ai-feed-user-meta">👤 Kỹ Sư Vận Hành:</div><div class="ai-feed-user-text">${escapeHtml(ticket)}</div>`;
+            feedBox.appendChild(userBubble);
+
+            // Container cho phản hồi phân tích
+            const turnBox = document.createElement('div');
+            turnBox.className = 'ai-feed-item';
+            turnBox.style.flexDirection = 'column';
+            turnBox.innerHTML = `<div style="color: #22d3ee; display:flex; align-items:center; gap:8px; padding:8px 0;">
+              <span>${isIaMode ? '⏳ Đang phân tích ticket và chuẩn bị bộ lệnh kiểm tra tự động...' : `⏳ Đang phân tích ticket với [${provider}] ${model} (Mức suy nghĩ: ${reasoning_effort.toUpperCase()})...`}</span>
+            </div>`;
+            feedBox.appendChild(turnBox);
+            feedBox.scrollTop = feedBox.scrollHeight;
+
+            ticketInput.value = '';
+            ticketInput.placeholder = "Nhập câu hỏi tiếp theo để đào sâu sự cố này (ví dụ: kiểm tra thêm interface xe-0/0/1)...";
+
+            // Lấy history gửi lên backend
+            const history = (currentSession.messages || []).map(m => ({
+              role: m.role,
+              content: m.content
+            }));
+
+            try {
+              const res = await agentFetch('/api/agent/analyze', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ticket, history, provider, model, reasoning_effort })
+              });
+              const data = await res.json();
+              if (data.error) {
+                turnBox.innerHTML = `<div style="color: #fb7185;">Lỗi: ${data.error.message || JSON.stringify(data.error)}</div>`;
+                return;
+              }
+
+              const devices = data.matched_devices || [];
+              const commands = data.recommended_commands || [];
+
+              let html = `
+                ${data.thought_process ? `
+                <div class="ai-reasoning-card" style="width:100%;">
+                  <div class="ai-reasoning-head">
+                    <span>${isIaMode ? '📋 Quy Trình Phân Tích &amp; Chuẩn Đoán Kỹ Thuật (Diagnostic Rule Engine)' : `🧠 Luồng Suy Luận Chuyên Sâu (${model} - CoT)`}</span>
+                    <span style="font-size:10px; color:#22d3ee; font-weight:normal;">${isIaMode ? 'Rule Evaluation · Success' : `Thinking Process (${reasoning_effort})`}</span>
+                  </div>
+                  <div class="ai-reasoning-body">${data.thought_process}</div>
+                </div>
+                ` : ''}
+
+                <div style="border-bottom: 1px solid rgba(148,163,184,0.15); padding-bottom: 10px; margin-bottom: 10px; margin-top: 6px;">
+                  <strong style="color: #38bdf8; font-size: 13px;">📋 Tóm Tắt &amp; Nhận Định Sự Cố:</strong>
+                  <div style="color: #f1f5f9; margin-top: 4px;">${data.summary || 'N/A'}</div>
+                  <div style="margin-top: 6px;"><span style="background: rgba(34,211,238,0.2); color: #22d3ee; padding: 2px 7px; border-radius: 4px; font-size: 11px;">Phân loại: ${data.issue_type || 'General'}</span></div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                  <strong style="color: #38bdf8; font-size: 12px;">🎯 Thiết Bị Đề Xuất (${devices.length}):</strong>
+                  <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">
+                    ${devices.length ? devices.map(d => `<span style="padding:3px 8px; border-radius:5px; background:rgba(34,211,238,0.15); color:#22d3ee; font-weight:700; font-size:11px;">${d.name} (${d.device_type || d.vendor || 'network'})</span>`).join('') : '<span style="color:#64748b;">Không tự động nhận diện được tên thiết bị từ kho</span>'}
+                  </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                  <strong style="color: #38bdf8; font-size: 12px;">⚡ Lệnh CLI Show Khuyến Nghị (${commands.length}):</strong>
+                  <div style="display:flex; flex-direction:column; gap:4px; margin-top:5px;">
+                    ${commands.map(c => `<code style="padding:4px 8px; border-radius:5px; background:rgba(15,23,42,0.8); border:1px solid rgba(148,163,184,0.2); color:#cbd5e1; font-family:monospace; font-size:11px;">${c}</code>`).join('')}
+                  </div>
+                  <div style="color: #94a3b8; font-size: 11px; margin-top: 6px;"><em>Lập luận: ${data.reasoning || ''}</em></div>
+                </div>
+
+                <div style="display:flex; justify-content: flex-end; gap: 10px; margin-top: 14px; border-top: 1px solid rgba(148,163,184,0.15); padding-top: 12px;">
+                  <button type="button" class="ai-btn-apply" data-commands='${JSON.stringify(commands).replace(/'/g, "&apos;")}' data-devices='${JSON.stringify(devices).replace(/'/g, "&apos;")}' style="padding: 8px 18px; border-radius: 8px; background: linear-gradient(135deg, #0ea5e9, #22d3ee); border:0; color:#020617; font-weight:700; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:6px;">
+                    <span>➡️ Điền ${commands.length} Lệnh &amp; Tự Động Chọn ${devices.length} Thiết Bị Sang Console Ngay</span>
+                  </button>
+                </div>
+              `;
+              turnBox.innerHTML = html;
+
+              const applyBtn = turnBox.querySelector('.ai-btn-apply');
+              if (applyBtn) {
+                applyBtn.addEventListener('click', () => {
+                  navigateTo('/');
+                  setTimeout(() => {
+                    applyToMainConsole(commands, devices);
+                  }, 60);
+                });
+              }
+
+              // Lưu vào Messages của Session
+              currentSession.messages.push({ role: 'user', content: ticket });
+              currentSession.messages.push({
+                role: 'assistant',
+                content: `Tóm tắt: ${data.summary}. Lệnh đề xuất: ${commands.join(', ')}`,
+                html: html
+              });
+              saveStoredSessions(sessions);
+              renderSessionList();
+              feedBox.scrollTop = feedBox.scrollHeight;
+            } catch (err) {
+              turnBox.innerHTML = `<div style="color: #fb7185;">Lỗi kết nối: ${err.message}</div>`;
+            }
+          });
+        }
+
+        // Chế độ 2: Agent Tự Điều Tra & Báo Cáo (ReAct) Kèm Multi-turn Memory
+        const btnInvestigate = document.getElementById('ai-btn-investigate');
+        if (btnInvestigate) {
+          btnInvestigate.addEventListener('click', async () => {
+            const ticket = ticketInput.value.trim();
+            if (!ticket) {
+              alert('Vui lòng nhập hoặc dán nội dung ticket/yêu cầu.');
+              return;
+            }
+
+            const { provider, model, reasoning_effort } = getActivePromptSelection();
+            const isIaMode = document.getElementById('ai-workspace').classList.contains('mode-ia');
+
+            // Quản lý Session
+            let sessions = getStoredSessions();
+            let currentSession = sessions.find(s => s.id === currentSessionId);
+            if (!currentSession) {
+              currentSessionId = 'sess_' + Date.now();
+              const shortTitle = ticket.slice(0, 40).replace(/[\r\n]+/g, ' ') + (ticket.length > 40 ? '...' : '');
+              currentSession = {
+                id: currentSessionId,
+                title: shortTitle,
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                messages: []
+              };
+              sessions.unshift(currentSession);
+            } else {
+              currentSession.updatedAt = Date.now();
+            }
+
+            // Xóa placeholder mặc định nếu có
+            if (feedBox && feedBox.querySelector('div[style*="margin: auto"]')) {
+              feedBox.innerHTML = '';
+            }
+
+            // Hiển thị Bubble câu hỏi người dùng
+            const userBubble = document.createElement('div');
+            userBubble.className = 'ai-feed-user-bubble';
+            userBubble.innerHTML = `<div class="ai-feed-user-meta">👤 Kỹ Sư Vận Hành:</div><div class="ai-feed-user-text">${escapeHtml(ticket)}</div>`;
+            feedBox.appendChild(userBubble);
+
+            // Container cho turn điều tra này
+            const turnContainer = document.createElement('div');
+            turnContainer.className = 'ai-feed-item';
+            turnContainer.style.flexDirection = 'column';
+            turnContainer.style.width = '100%';
+            turnContainer.innerHTML = `
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom: 8px; color:#22d3ee;">
+                <span>${isIaMode ? '🚀 Đang bắt đầu quy trình thu thập dữ liệu & lập báo cáo sự cố...' : `🚀 Agent đang khởi động phiên điều tra với [${provider}] ${model} (Mức suy nghĩ: ${reasoning_effort.toUpperCase()})...`}</span>
+              </div>
+              <div class="turn-stream-steps" style="display:flex; flex-direction:column; gap:6px; width:100%;"></div>
+            `;
+            feedBox.appendChild(turnContainer);
+            feedBox.scrollTop = feedBox.scrollHeight;
+
+            ticketInput.value = '';
+            ticketInput.placeholder = "Nhập câu hỏi tiếp theo để đào sâu sự cố này (ví dụ: kiểm tra thêm interface xe-0/0/1)...";
+
+            const stepsContainer = turnContainer.querySelector('.turn-stream-steps');
+
+            // Lấy history gửi lên backend
+            const history = (currentSession.messages || []).map(m => ({
+              role: m.role,
+              content: m.content
+            }));
+
+            let lastFinalReport = '';
+
+            try {
+              const res = await agentFetch('/api/agent/investigate', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ticket, history, auto_execute: true, provider, model, reasoning_effort })
+              });
+
+              const reader = res.body.getReader();
+              const decoder = new TextDecoder();
+              let buffer = "";
+
+              while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+
+                const lines = buffer.split('\n');
+                buffer = lines.pop();
+
+                for (const line of lines) {
+                  const trimmed = line.trim();
+                  if (trimmed.startsWith('data: ')) {
+                    try {
+                      const ev = JSON.parse(trimmed.slice(6));
+                      if (ev.type === 'completed' && ev.final_report) {
+                        lastFinalReport = ev.final_report;
+                      }
+                      renderStreamEvent(stepsContainer, ev);
+                      feedBox.scrollTop = feedBox.scrollHeight;
+                    } catch (e) {}
+                  }
+                }
+              }
+
+              // Lưu vào Messages của Session
+              currentSession.messages.push({ role: 'user', content: ticket });
+              currentSession.messages.push({
+                role: 'assistant',
+                content: lastFinalReport || 'Đã hoàn tất điều tra.',
+                html: turnContainer.innerHTML
+              });
+              saveStoredSessions(sessions);
+              renderSessionList();
+            } catch (err) {
+              if (stepsContainer) {
+                stepsContainer.innerHTML += `<div style="color:#fb7185; padding:8px 0;">Lỗi phiên điều tra: ${err.message}</div>`;
+              }
+            }
+          });
+        }
+
+        function renderStreamEvent(container, ev) {
+          if (!container) return;
+          const div = document.createElement('div');
+          div.className = 'ai-feed-item';
+          const isIaMode = document.getElementById('ai-workspace').classList.contains('mode-ia');
+
+          if (ev.type === 'thinking') {
+            div.innerHTML = `<span class="ai-tag thinking">${isIaMode ? 'Chuẩn đoán' : 'Suy luận'}</span><span style="color:#cbd5e1;">${ev.message}</span>`;
+          } else if (ev.type === 'reasoning_thought') {
+            div.innerHTML = `
+              <div class="ai-reasoning-card" style="width:100%;">
+                <div class="ai-reasoning-head">
+                  <span>${isIaMode ? '📋 Quy Trình Phân Tích Kỹ Thuật (Diagnostic Rule Engine):' : `🧠 Luồng Suy Luận Chuyên Sâu (${ev.model} - Chain of Thought):`}</span>
+                  <span style="font-size:10px; color:#22d3ee;">${isIaMode ? 'Rule Evaluation' : 'Thinking'}</span>
+                </div>
+                <div class="ai-reasoning-body">${ev.thought}</div>
+              </div>
+            `;
+          } else if (ev.type === 'tool_call') {
+            return; // Ẩn dòng gọi hàm thô để tránh trùng lặp với Thao tác SSH bên dưới
+          } else if (ev.type === 'executing') {
+            const cmdsHtml = (ev.commands || []).map(c => `<code style="padding:2px 7px; border-radius:4px; background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.3); color:#38bdf8; font-family:monospace; font-size:11.5px;">${escapeHtml(c)}</code>`).join(' ');
+            div.innerHTML = `
+              <div style="width:100%;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span class="ai-tag exec">${isIaMode ? 'Thao tác SSH' : 'SSH Exec'}</span>
+                  <span style="color:#60a5fa; font-weight:600;">Gửi lệnh tới thiết bị <span style="color:#22d3ee;">${escapeHtml(ev.device)}</span>:</span>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; margin-left:4px;">
+                  ${cmdsHtml}
+                </div>
+              </div>
+            `;
+          } else if (ev.type === 'tool_result') {
+            const isExec = ev.tool === 'execute_cli' || (ev.data && ev.data.action === 'execute') || (ev.results && ev.results.length > 0);
+            if (isExec) {
+              const results = ev.results || (ev.data && ev.data.results) || [];
+              const devName = ev.device || (ev.data && ev.data.device) || 'Thiết bị';
+              let resultsHtml = '';
+              if (results && results.length > 0) {
+                resultsHtml = results.map(r => {
+                  const cmdText = escapeHtml(r.command || '');
+                  const st = r.status || 'SUCCESS';
+                  const isOk = st === 'SUCCESS';
+                  const stBadge = `<span style="font-size:10px; padding:2px 7px; border-radius:4px; background:${isOk ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}; color:${isOk ? '#34d399' : '#f87171'}; font-weight:700;">${st}</span>`;
+                  const rawOut = (r.output || r.preview || r.message || '').trim();
+                  const outSnippet = rawOut ? `
+                    <div style="margin-top:6px;">
+                      <div style="font-size:10.5px; color:#64748b; margin-bottom:2px;">Output nhận được từ thiết bị:</div>
+                      <pre style="margin:0; padding:8px 10px; background:rgba(2,6,23,0.92); border:1px solid rgba(148,163,184,0.18); border-radius:5px; color:#a5f3fc; font-size:11px; font-family:Consolas, 'Fira Code', monospace; line-height:1.45; max-height:220px; overflow-y:auto; white-space:pre-wrap;">${escapeHtml(rawOut)}</pre>
+                    </div>
+                  ` : '';
+                  return `
+                    <div style="margin-top:6px; padding:8px 10px; background:rgba(15,23,42,0.65); border-radius:6px; border-left:3px solid ${isOk ? '#10b981' : '#ef4444'}; border:1px solid rgba(148,163,184,0.12);">
+                      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                        <span style="display:flex; align-items:center; gap:6px;">
+                          <span style="color:#64748b; font-size:11px;">$</span>
+                          <code style="color:#38bdf8; font-weight:700; font-size:11.5px; font-family:monospace;">${cmdText}</code>
+                        </span>
+                        ${stBadge}
+                      </div>
+                      ${outSnippet}
+                    </div>
+                  `;
+                }).join('');
+              }
+              div.innerHTML = `
+                <div style="width:100%;">
+                  <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">
+                    <span class="ai-tag result">${isIaMode ? 'Kết quả phản hồi' : 'CLI Result'}</span>
+                    <span style="color:#10b981; font-weight:600; font-size:12px;">${escapeHtml(ev.summary || `${devName}: Đã thực thi lệnh`)}</span>
+                  </div>
+                  ${resultsHtml}
+                </div>
+              `;
+            } else if (ev.tool === 'search_inventory' || ev.devices || (ev.data && ev.data.action === 'search')) {
+              const devs = ev.devices || (ev.data && ev.data.devices) || [];
+              const devChips = devs.map(d => `<span style="padding:2px 7px; border-radius:4px; background:rgba(34,211,238,0.15); color:#22d3ee; font-weight:600; font-size:11px;">${escapeHtml(d.name || d)}</span>`).join(' ');
+              div.innerHTML = `
+                <div style="width:100%;">
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="ai-tag result">${isIaMode ? 'Tra cứu' : 'Inventory'}</span>
+                    <span style="color:#10b981; font-weight:600;">${escapeHtml(ev.summary || 'Tìm kiếm thiết bị')}</span>
+                  </div>
+                  ${devChips ? `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; margin-left:4px;">${devChips}</div>` : ''}
+                </div>
+              `;
+            } else {
+              div.innerHTML = `<span class="ai-tag result">${isIaMode ? 'Kết quả' : 'Tool Result'}</span><span style="color:#10b981;">${escapeHtml(ev.summary || JSON.stringify(ev.data))}</span>`;
+            }
+          } else if (ev.type === 'email_sent') {
+            div.innerHTML = `<span class="ai-tag result" style="background:rgba(16,185,129,0.2); color:#34d399; border:1px solid rgba(16,185,129,0.3);">Email</span><span style="color:#34d399;">✅ Đã tự động gửi email báo cáo sự cố tới <strong>${ev.recipient}</strong></span>`;
+          } else if (ev.type === 'email_failed') {
+            div.innerHTML = `<span class="ai-tag err" style="background:rgba(239,68,68,0.2); color:#f87171; border:1px solid rgba(239,68,68,0.3);">Email</span><span style="color:#f87171;">⚠️ Không tự động gửi được email: ${ev.error}</span>`;
+          } else if (ev.type === 'completed') {
+            const recipientEmail = (currentConfig?.email?.recipient) || 'thongvv5@fpt.com';
+            div.innerHTML = `
+              <div style="width: 100%; border-top: 1px solid rgba(148,163,184,0.2); padding-top: 12px; margin-top: 10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; flex-wrap:wrap;">
+                  <strong style="color: #2dd4a7; font-size:13px;">${isIaMode ? '✅ Báo Cáo Kỹ Thuật Sự Cố Hoàn Tất (RCA):' : '✅ Báo Cáo Điều Tra Hoàn Tất (RCA):'}</strong>
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <button type="button" class="btn-email-rca-action" style="padding:4px 10px; border-radius:5px; background:rgba(14,165,233,0.18); border:1px solid #38bdf8; color:#38bdf8; font-size:11px; font-weight:600; cursor:pointer;" title="Gửi báo cáo này tới ${recipientEmail}">
+                      📧 Gửi Email Báo Cáo
+                    </button>
+                    <button type="button" class="btn-copy-rca-action" style="padding:4px 10px; border-radius:5px; background:rgba(34,211,238,0.15); border:1px solid #22d3ee; color:#22d3ee; font-size:11px; cursor:pointer;">
+                      📋 Copy Báo Cáo
+                    </button>
+                  </div>
+                </div>
+                <div class="ai-report">${ev.final_report}</div>
+              </div>
+            `;
+            setTimeout(() => {
+              const cpBtn = div.querySelector('.btn-copy-rca-action');
+              if (cpBtn) {
+                cpBtn.addEventListener('click', () => {
+                  navigator.clipboard.writeText(ev.final_report);
+                  cpBtn.textContent = 'Đã sao chép!';
+                  setTimeout(() => cpBtn.textContent = '📋 Copy Báo Cáo', 2000);
+                });
+              }
+              const emBtn = div.querySelector('.btn-email-rca-action');
+              if (emBtn) {
+                emBtn.addEventListener('click', async () => {
+                  emBtn.disabled = true;
+                  emBtn.textContent = '⏳ Đang gửi mail...';
+                  try {
+                    const ticketText = (ticketInput && ticketInput.value) ? ticketInput.value.slice(0, 80) : 'Sự Cố Mạng';
+                    const res = await agentFetch('/api/agent/email/send', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        subject: `Báo Cáo Sự Cố - ${ticketText}`,
+                        report: ev.final_report
+                      })
+                    });
+                    const d = await res.json();
+                    if (d.ok) {
+                      emBtn.textContent = '✅ Đã gửi mail!';
+                      emBtn.style.color = '#34d399';
+                      emBtn.style.borderColor = '#34d399';
+                    } else {
+                      alert('Lỗi gửi email: ' + (d.error || 'Thất bại'));
+                      emBtn.textContent = '❌ Thử lại';
+                    }
+                  } catch (e) {
+                    alert('Lỗi gửi email: ' + e.message);
+                    emBtn.textContent = '❌ Thử lại';
+                  } finally {
+                    setTimeout(() => {
+                      emBtn.disabled = false;
+                      if (!emBtn.textContent.includes('Đã gửi')) emBtn.textContent = '📧 Gửi Email Báo Cáo';
+                    }, 4000);
+                  }
+                });
+              }
+            }, 80);
+          } else {
+            return;
+          }
+
+          container.appendChild(div);
+          div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function applyToMainConsole(commands, devices) {
+          const devNames = (devices || []).map(d => (typeof d === 'string' ? d : d.name)).filter(Boolean);
+
+          const setReactValue = (el, val) => {
+            if (!el) return;
+            const proto = el instanceof HTMLTextAreaElement ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+            const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+            if (setter) {
+              setter.call(el, val);
+            } else {
+              el.value = val;
+            }
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          };
+
+          // 1. Điền danh sách lệnh show vào ô LỆNH CLI của Run Console
+          const fillCommands = () => {
+            const cmdTa = document.querySelector('textarea.command-input') || document.querySelector('.command-input');
+            if (cmdTa && commands && commands.length) {
+              const cmdList = Array.isArray(commands) ? commands : [commands];
+              setReactValue(cmdTa, cmdList.join('\n'));
+            }
+          };
+
+          // 2. Điền danh sách tên thiết bị vào ô lọc (hỗ trợ nhiều dòng)
+          const fillFilter = () => {
+            if (!devNames.length) return;
+            const filterInput = document.querySelector('input[aria-label="Tìm thiết bị"], textarea[aria-label="Tìm thiết bị"]')
+              || document.querySelector('.search-field textarea, .search-field input');
+            if (filterInput) {
+              setReactValue(filterInput, devNames.join('\n'));
+            }
+          };
+
+          // 3. Tự động tick chọn đúng các thiết bị mục tiêu
+          const selectDevices = () => {
+            if (!devNames.length) return;
+            // Bỏ tick toàn bộ nếu trước đó đang chọn bừa cả trang
+            const thCb = document.querySelector('thead input[type="checkbox"]');
+            
+            // Tick từng thiết bị theo danh sách được AI đề xuất
+            let tickedCount = 0;
+            devNames.forEach(name => {
+              const cb = document.querySelector(`input[aria-label="Chọn ${name}"]`);
+              if (cb) {
+                if (!cb.checked) {
+                  try { cb.click(); } catch (e) {}
+                }
+                tickedCount++;
+              }
+            });
+
+            // Nếu sau khi lọc, tất cả thiết bị hiển thị đều nằm trong devNames thì có thể tick thCb nếu chưa đủ
+            if (tickedCount === 0 && thCb && !thCb.checked) {
+              try { thCb.click(); } catch (e) {}
+            }
+          };
+
+          fillCommands();
+          fillFilter();
+          setTimeout(() => {
+            fillCommands();
+            fillFilter();
+          }, 100);
+          setTimeout(() => {
+            selectDevices();
+          }, 350);
+          setTimeout(() => {
+            selectDevices();
+          }, 700);
+        }
+
+        // Click delegation cho nút Điền vào Console (kể cả khi khôi phục từ lịch sử)
+        document.addEventListener('click', (e) => {
+          const btn = e.target.closest('.ai-btn-apply');
+          if (btn) {
+            try {
+              const rawCmds = btn.getAttribute('data-commands');
+              const rawDevs = btn.getAttribute('data-devices');
+              const cmds = rawCmds ? JSON.parse(rawCmds) : [];
+              const devs = rawDevs ? JSON.parse(rawDevs) : [];
+              navigateTo('/');
+              setTimeout(() => {
+                applyToMainConsole(cmds, devs);
+              }, 80);
+            } catch (err) {
+              console.error('Lỗi apply to console:', err);
+            }
+          }
+        });
+
+        // -------------------------------------------------------------
+        // 5. TRA CỨU DANH SÁCH THIẾT BỊ TRONG KHO (3.243)
+        // -------------------------------------------------------------
+        const devList = document.getElementById('ai-dev-list');
+        const devSearch = document.getElementById('ai-device-search');
+
+        function renderDeviceCards(rows) {
+          if (!devList) return;
+          if (!rows || rows.length === 0) {
+            devList.innerHTML = '<div style="font-size:11px; color:#64748b; padding:6px;">Không tìm thấy thiết bị nào khớp.</div>';
+            return;
+          }
+          devList.innerHTML = rows.map(d => `
+            <div class="ai-dev-card" data-devname="${d.name}">
+              <div>
+                <div class="ai-dev-name">${d.name}</div>
+                <div class="ai-dev-sub">${d.host} · ${d.vendor_label || d.vendor || ''} · ${d.pop || ''}</div>
+              </div>
+              <span style="font-size: 10px; color: #22d3ee; background: rgba(34,211,238,0.1); padding: 2px 6px; border-radius: 4px;">+ Chèn</span>
+            </div>
+          `).join('');
+
+          devList.querySelectorAll('.ai-dev-card').forEach(card => {
+            card.addEventListener('click', () => {
+              const name = card.dataset.devname;
+              if (ticketInput) {
+                ticketInput.value = ticketInput.value ? `${ticketInput.value} ${name}` : name;
+                ticketInput.focus();
+              }
+            });
+          });
+        }
+
+        async function loadInventoryPreview(query = '') {
+          if (!devList) return;
+          try {
+            const url = query ? `/api/inventory?limit=15&q=${encodeURIComponent(query)}` : '/api/inventory?limit=10';
+            const res = await agentFetch(url);
+            const data = await res.json();
+            renderDeviceCards(data.rows || []);
+          } catch (e) {
+            if (devList) devList.innerHTML = '<div style="font-size:11px; color:#fb7185; padding:6px;">Không thể tải danh sách.</div>';
+          }
+        }
+
+        let searchTimeout = null;
+        if (devSearch) {
+          devSearch.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const val = e.target.value.trim();
+            searchTimeout = setTimeout(() => {
+              loadInventoryPreview(val);
+            }, 250);
+          });
+        }
+
+        // Auto-expand textarea tìm kiếm hàng loạt khi có nhiều dòng
+        document.addEventListener('input', (e) => {
+          if (e.target && e.target.matches && e.target.matches('.search-field textarea, textarea[aria-label="Tìm thiết bị"]')) {
+            const ta = e.target;
+            ta.style.height = 'auto';
+            const lines = (ta.value || '').split('\n').length;
+            const targetHeight = Math.min(Math.max(ta.scrollHeight, lines > 1 ? lines * 22 : 24), 180);
+            ta.style.height = targetHeight + 'px';
+          }
+        });
+
+        // Khởi tạo danh sách phiên khi load trang
+        try {
+          renderSessionList();
+        } catch (e) {}
+
+      })();
+    </script>
+  </body>
+</html>

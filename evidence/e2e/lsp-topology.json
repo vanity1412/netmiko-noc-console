@@ -1,0 +1,1041 @@
+{
+  "schema_version": 1,
+  "discovery_id": "lsp_20261116T080648Z_27cc3b",
+  "generated_at": "2026-11-16T08:06:48Z",
+  "source": "lab-lsp-pe-01",
+  "lsp": {
+    "name": "FGame-SGP-PE-01-01-To-10.255.56.8",
+    "ingress": "lab-lsp-pe-01",
+    "egress": "lab-lsp-pe-02",
+    "destination": "10.255.56.8",
+    "primary_path": "Via-FTI-SGP-GW-02-02-ae15-APG",
+    "secondary_paths": [],
+    "backup_paths": [
+      {
+        "name": "Via-SGP-PE-02-02-HCM-MC-02-AAE",
+        "standby": false
+      }
+    ],
+    "no_cspf": false,
+    "configured": true,
+    "operational": true,
+    "operational_state": "UP",
+    "active_path": "Via-FTI-SGP-GW-02-02-ae15-APG",
+    "rsvp_state": "UP",
+    "lsp_type": "Static Configured",
+    "paths": [
+      {
+        "name": "Via-FTI-SGP-GW-02-02-ae15-APG",
+        "role": "primary",
+        "state": "ACTIVE",
+        "display_role": "PRIMARY ACTIVE",
+        "hop_source": "operational-rro",
+        "hops": [
+          "42.118.124.101",
+          "118.69.247.130",
+          "113.22.182.37"
+        ]
+      },
+      {
+        "name": "Via-SGP-PE-02-02-HCM-MC-02-AAE",
+        "role": "backup",
+        "state": "STANDBY",
+        "display_role": "BACKUP CONFIGURED",
+        "hop_source": "operational-rro",
+        "hops": [
+          "10.255.3.3",
+          "10.255.56.8"
+        ]
+      }
+    ]
+  },
+  "overall_status": "UP",
+  "nodes": [
+    {
+      "id": "n-474ba45800",
+      "key": "device:lab-lsp-pe-01",
+      "hostname": "lab-lsp-pe-01",
+      "label": "lab-lsp-pe-01",
+      "ip": "10.255.1.1",
+      "loopback_ip": "10.255.1.1",
+      "mgmt_ip": "10.99.20.1",
+      "device_type": "juniper_junos",
+      "device_role": "MPLS PE",
+      "role": "INGRESS",
+      "role_label": "Ingress PE",
+      "resolved": true,
+      "verification": "verified",
+      "status": "VERIFIED",
+      "matched_interface": "lo0.0",
+      "matched_source": "source CLI/inventory",
+      "evidence_ids": [
+        "ev-7e5f3546c7d3",
+        "ev-799e334ffa2e",
+        "ev-73be34bfc8f8",
+        "ev-a509254ede07",
+        "ev-bafac21ef61f",
+        "ev-be5871704f3e",
+        "ev-b2f242ac3d74",
+        "ev-64a2e346cbd2",
+        "ev-4d24893b71e2"
+      ],
+      "query_status": "SUCCESS"
+    },
+    {
+      "id": "n-fae0f4ccdb",
+      "key": "device:lab-lsp-gw-02",
+      "hostname": "lab-lsp-gw-02",
+      "label": "lab-lsp-gw-02",
+      "ip": "42.118.124.101",
+      "loopback_ip": "10.255.2.2",
+      "mgmt_ip": "10.99.20.2",
+      "device_type": "juniper_junos",
+      "device_role": "MPLS P",
+      "role": "TRANSIT",
+      "role_label": "Transit P/PE",
+      "resolved": true,
+      "verification": "verified",
+      "status": "VERIFIED",
+      "matched_interface": "ge-0/0/0.0",
+      "matched_source": "show interfaces terse",
+      "evidence_ids": [
+        "ev-c5a4eaa502ad",
+        "ev-6059ff57d076",
+        "ev-7ed04882f096",
+        "ev-e1b20f23cf2d",
+        "ev-0d87dcc1a674"
+      ],
+      "query_status": "SUCCESS"
+    },
+    {
+      "id": "n-a5e5d7d2b2",
+      "key": "device:lab-lsp-mc-02",
+      "hostname": "lab-lsp-mc-02",
+      "label": "lab-lsp-mc-02",
+      "ip": "118.69.247.130",
+      "loopback_ip": "10.255.3.3",
+      "mgmt_ip": "10.99.20.3",
+      "device_type": "juniper_junos",
+      "device_role": "MPLS P",
+      "role": "TRANSIT",
+      "role_label": "Transit P/PE",
+      "resolved": true,
+      "verification": "verified",
+      "status": "VERIFIED",
+      "matched_interface": "ge-0/0/0.0",
+      "matched_source": "show interfaces terse",
+      "evidence_ids": [
+        "ev-56bff9b2f62e",
+        "ev-a4d1f364e308",
+        "ev-07cb787e75b4",
+        "ev-c9a1a3a7c0d7",
+        "ev-90e8584373d9"
+      ],
+      "query_status": "SUCCESS"
+    },
+    {
+      "id": "n-f30eacbc5d",
+      "key": "device:lab-lsp-pe-02",
+      "hostname": "lab-lsp-pe-02",
+      "label": "lab-lsp-pe-02",
+      "ip": "113.22.182.37",
+      "loopback_ip": "10.255.56.8",
+      "mgmt_ip": "10.99.20.4",
+      "device_type": "juniper_junos",
+      "device_role": "MPLS PE",
+      "role": "EGRESS",
+      "role_label": "Egress PE",
+      "resolved": true,
+      "verification": "verified",
+      "status": "VERIFIED",
+      "matched_interface": "ge-0/0/0.0",
+      "matched_source": "show interfaces terse",
+      "evidence_ids": [
+        "ev-d1851e031e3b",
+        "ev-2e5be3469a09",
+        "ev-9a2f3643702b",
+        "ev-15177b6c6f15",
+        "ev-ae03263b68ab"
+      ],
+      "query_status": "SUCCESS"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-1b4bbcbd00",
+      "path_id": "p-19b67129c9",
+      "path_name": "Via-FTI-SGP-GW-02-02-ae15-APG",
+      "path_role": "primary",
+      "path_state": "PRIMARY ACTIVE",
+      "source": "n-474ba45800",
+      "target": "n-fae0f4ccdb",
+      "source_label": "lab-lsp-pe-01",
+      "target_label": "lab-lsp-gw-02",
+      "kind": "physical",
+      "verified": true,
+      "status": "PRIMARY ACTIVE",
+      "style": "solid",
+      "dash": "none",
+      "color": "#2dd4a7",
+      "tone": "ok",
+      "local_interface": "ge-0/0/0.0",
+      "remote_interface": "ge-0/0/0.0",
+      "local_ip": "42.118.124.102",
+      "remote_ip": "42.118.124.101",
+      "from_hop_ip": "10.255.1.1",
+      "to_hop_ip": "42.118.124.101",
+      "bandwidth": null,
+      "link_status": "UP",
+      "link_sources": [
+        "ISIS-L2",
+        "LLDP"
+      ],
+      "strict": null,
+      "hop_origin": "ingress",
+      "parallel_index": 0,
+      "evidence_ids": [
+        "ev-73be34bfc8f8",
+        "ev-b2f242ac3d74",
+        "ev-be5871704f3e"
+      ],
+      "conflict": null,
+      "label": "PRIMARY · PRIMARY ACTIVE"
+    },
+    {
+      "id": "e-106ed18f2a",
+      "path_id": "p-19b67129c9",
+      "path_name": "Via-FTI-SGP-GW-02-02-ae15-APG",
+      "path_role": "primary",
+      "path_state": "PRIMARY ACTIVE",
+      "source": "n-fae0f4ccdb",
+      "target": "n-a5e5d7d2b2",
+      "source_label": "lab-lsp-gw-02",
+      "target_label": "lab-lsp-mc-02",
+      "kind": "physical",
+      "verified": true,
+      "status": "PRIMARY ACTIVE",
+      "style": "solid",
+      "dash": "none",
+      "color": "#2dd4a7",
+      "tone": "ok",
+      "local_interface": "ge-0/0/1.0",
+      "remote_interface": "ge-0/0/0.0",
+      "local_ip": "118.69.247.129",
+      "remote_ip": "118.69.247.130",
+      "from_hop_ip": "42.118.124.101",
+      "to_hop_ip": "118.69.247.130",
+      "bandwidth": null,
+      "link_status": "UP",
+      "link_sources": [
+        "ISIS-L2",
+        "LLDP"
+      ],
+      "strict": null,
+      "hop_origin": "operational-rro",
+      "parallel_index": 0,
+      "evidence_ids": [
+        "ev-73be34bfc8f8",
+        "ev-7ed04882f096",
+        "ev-e1b20f23cf2d"
+      ],
+      "conflict": null,
+      "label": "PRIMARY · PRIMARY ACTIVE"
+    },
+    {
+      "id": "e-24ed81d91a",
+      "path_id": "p-19b67129c9",
+      "path_name": "Via-FTI-SGP-GW-02-02-ae15-APG",
+      "path_role": "primary",
+      "path_state": "PRIMARY ACTIVE",
+      "source": "n-a5e5d7d2b2",
+      "target": "n-f30eacbc5d",
+      "source_label": "lab-lsp-mc-02",
+      "target_label": "lab-lsp-pe-02",
+      "kind": "physical",
+      "verified": true,
+      "status": "PRIMARY ACTIVE",
+      "style": "solid",
+      "dash": "none",
+      "color": "#2dd4a7",
+      "tone": "ok",
+      "local_interface": "ge-0/0/1.0",
+      "remote_interface": "ge-0/0/0.0",
+      "local_ip": "113.22.182.38",
+      "remote_ip": "113.22.182.37",
+      "from_hop_ip": "118.69.247.130",
+      "to_hop_ip": "113.22.182.37",
+      "bandwidth": null,
+      "link_status": "UP",
+      "link_sources": [
+        "ISIS-L2",
+        "LLDP"
+      ],
+      "strict": null,
+      "hop_origin": "operational-rro",
+      "parallel_index": 0,
+      "evidence_ids": [
+        "ev-07cb787e75b4",
+        "ev-73be34bfc8f8",
+        "ev-c9a1a3a7c0d7"
+      ],
+      "conflict": null,
+      "label": "PRIMARY · PRIMARY ACTIVE"
+    },
+    {
+      "id": "e-091d79decf",
+      "path_id": "p-6175e17feb",
+      "path_name": "Via-SGP-PE-02-02-HCM-MC-02-AAE",
+      "path_role": "backup",
+      "path_state": "BACKUP CONFIGURED",
+      "source": "n-474ba45800",
+      "target": "n-a5e5d7d2b2",
+      "source_label": "lab-lsp-pe-01",
+      "target_label": "lab-lsp-mc-02",
+      "kind": "logical",
+      "verified": false,
+      "status": "BACKUP CONFIGURED",
+      "style": "dashed",
+      "dash": "10 6",
+      "color": "#60a5fa",
+      "tone": "warn",
+      "local_interface": null,
+      "remote_interface": null,
+      "local_ip": null,
+      "remote_ip": null,
+      "from_hop_ip": "10.255.1.1",
+      "to_hop_ip": "10.255.3.3",
+      "bandwidth": null,
+      "link_status": "UNVERIFIED",
+      "link_sources": [],
+      "strict": null,
+      "hop_origin": "ingress",
+      "parallel_index": 0,
+      "evidence_ids": [
+        "ev-73be34bfc8f8"
+      ],
+      "conflict": null,
+      "label": "BACKUP · BACKUP CONFIGURED"
+    },
+    {
+      "id": "e-323632f1da",
+      "path_id": "p-6175e17feb",
+      "path_name": "Via-SGP-PE-02-02-HCM-MC-02-AAE",
+      "path_role": "backup",
+      "path_state": "BACKUP CONFIGURED",
+      "source": "n-a5e5d7d2b2",
+      "target": "n-f30eacbc5d",
+      "source_label": "lab-lsp-mc-02",
+      "target_label": "lab-lsp-pe-02",
+      "kind": "physical",
+      "verified": true,
+      "status": "BACKUP CONFIGURED",
+      "style": "dashed",
+      "dash": "10 6",
+      "color": "#60a5fa",
+      "tone": "warn",
+      "local_interface": "ge-0/0/1.0",
+      "remote_interface": "ge-0/0/0.0",
+      "local_ip": "113.22.182.38",
+      "remote_ip": "113.22.182.37",
+      "from_hop_ip": "10.255.3.3",
+      "to_hop_ip": "10.255.56.8",
+      "bandwidth": null,
+      "link_status": "UP",
+      "link_sources": [
+        "ISIS-L2",
+        "LLDP"
+      ],
+      "strict": null,
+      "hop_origin": "operational-rro",
+      "parallel_index": 1,
+      "evidence_ids": [
+        "ev-07cb787e75b4",
+        "ev-73be34bfc8f8",
+        "ev-c9a1a3a7c0d7"
+      ],
+      "conflict": null,
+      "label": "BACKUP · BACKUP CONFIGURED"
+    }
+  ],
+  "paths": [
+    {
+      "id": "p-19b67129c9",
+      "name": "Via-FTI-SGP-GW-02-02-ae15-APG",
+      "role": "primary",
+      "state": "ACTIVE",
+      "display_role": "PRIMARY ACTIVE",
+      "active": true,
+      "standby": false,
+      "configured": true,
+      "operational_only": false,
+      "no_cspf": false,
+      "hop_source": "operational-rro",
+      "rro": [
+        {
+          "ip": "42.118.124.101",
+          "strict": false
+        },
+        {
+          "ip": "118.69.247.130",
+          "strict": false
+        },
+        {
+          "ip": "113.22.182.37",
+          "strict": false
+        },
+        {
+          "ip": "10.255.56.8",
+          "strict": false
+        }
+      ],
+      "ero": [
+        {
+          "ip": "42.118.124.101",
+          "strict": true
+        },
+        {
+          "ip": "118.69.247.130",
+          "strict": true
+        },
+        {
+          "ip": "113.22.182.37",
+          "strict": true
+        }
+      ],
+      "configured_hops": [
+        {
+          "ip": "42.118.124.101",
+          "strict": true,
+          "origin": "config-ero"
+        },
+        {
+          "ip": "118.69.247.130",
+          "strict": true,
+          "origin": "config-ero"
+        },
+        {
+          "ip": "113.22.182.37",
+          "strict": true,
+          "origin": "config-ero"
+        }
+      ],
+      "hops": [
+        {
+          "ip": "42.118.124.101",
+          "strict": null,
+          "origin": "operational-rro",
+          "node_id": "n-fae0f4ccdb",
+          "node_key": "device:lab-lsp-gw-02",
+          "hostname": "lab-lsp-gw-02",
+          "resolved": true,
+          "evidence_id": "ev-73be34bfc8f8"
+        },
+        {
+          "ip": "118.69.247.130",
+          "strict": null,
+          "origin": "operational-rro",
+          "node_id": "n-a5e5d7d2b2",
+          "node_key": "device:lab-lsp-mc-02",
+          "hostname": "lab-lsp-mc-02",
+          "resolved": true,
+          "evidence_id": "ev-73be34bfc8f8"
+        },
+        {
+          "ip": "113.22.182.37",
+          "strict": null,
+          "origin": "operational-rro",
+          "node_id": "n-f30eacbc5d",
+          "node_key": "device:lab-lsp-pe-02",
+          "hostname": "lab-lsp-pe-02",
+          "resolved": true,
+          "evidence_id": "ev-73be34bfc8f8",
+          "destination_ips": [
+            "10.255.56.8"
+          ]
+        }
+      ],
+      "destination_ip": "10.255.56.8",
+      "destination_ips": [
+        "10.255.56.8"
+      ],
+      "edge_ids": [
+        "e-1b4bbcbd00",
+        "e-106ed18f2a",
+        "e-24ed81d91a"
+      ],
+      "evidence_ids": [
+        "ev-73be34bfc8f8",
+        "ev-7e5f3546c7d3",
+        "ev-a509254ede07"
+      ],
+      "style": {
+        "color": "#2dd4a7",
+        "dash": "none",
+        "tone": "ok"
+      },
+      "warning": null
+    },
+    {
+      "id": "p-6175e17feb",
+      "name": "Via-SGP-PE-02-02-HCM-MC-02-AAE",
+      "role": "backup",
+      "state": "STANDBY",
+      "display_role": "BACKUP CONFIGURED",
+      "active": false,
+      "standby": true,
+      "configured": true,
+      "operational_only": false,
+      "no_cspf": false,
+      "hop_source": "operational-rro",
+      "rro": [
+        {
+          "ip": "10.255.3.3",
+          "strict": false
+        },
+        {
+          "ip": "10.255.56.8",
+          "strict": false
+        }
+      ],
+      "ero": [
+        {
+          "ip": "10.255.3.3",
+          "strict": true
+        }
+      ],
+      "configured_hops": [
+        {
+          "ip": "10.255.3.3",
+          "strict": false,
+          "origin": "config-ero"
+        }
+      ],
+      "hops": [
+        {
+          "ip": "10.255.3.3",
+          "strict": null,
+          "origin": "operational-rro",
+          "node_id": "n-a5e5d7d2b2",
+          "node_key": "device:lab-lsp-mc-02",
+          "hostname": "lab-lsp-mc-02",
+          "resolved": true,
+          "evidence_id": "ev-73be34bfc8f8"
+        },
+        {
+          "ip": "10.255.56.8",
+          "strict": null,
+          "origin": "operational-rro",
+          "node_id": "n-f30eacbc5d",
+          "node_key": "device:lab-lsp-pe-02",
+          "hostname": "lab-lsp-pe-02",
+          "resolved": true,
+          "evidence_id": "ev-73be34bfc8f8"
+        }
+      ],
+      "destination_ip": "10.255.56.8",
+      "destination_ips": [],
+      "edge_ids": [
+        "e-091d79decf",
+        "e-323632f1da"
+      ],
+      "evidence_ids": [
+        "ev-73be34bfc8f8",
+        "ev-7e5f3546c7d3",
+        "ev-a509254ede07"
+      ],
+      "style": {
+        "color": "#60a5fa",
+        "dash": "10 6",
+        "tone": "warn"
+      },
+      "warning": null
+    }
+  ],
+  "unresolved": [],
+  "conflicts": [],
+  "warnings": [],
+  "evidence": [
+    {
+      "id": "ev-7e5f3546c7d3",
+      "device": "lab-lsp-pe-01",
+      "command": "show configuration protocols mpls | display set | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 18,
+      "bytes": 1233,
+      "output_sha256": "9ce632d9928dc3d9cee62c4588b8dd7a5771a00dfc7b000dec5982939fad052b",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/01-show_configuration_protocols_mpls-e71de7.txt",
+      "note": null
+    },
+    {
+      "id": "ev-799e334ffa2e",
+      "device": "lab-lsp-pe-01",
+      "command": "show configuration protocols mpls label-switched-path FGame-SGP-PE-01-01-To-10.255.56.8 | display set | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 11,
+      "bytes": 827,
+      "output_sha256": "e4335c041ff600167f488085e993ccfb609e6b4ef2075c3856007a3828e3a9d8",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/02-show_configuration_protocols_mpls_label-switched-54eb73.txt",
+      "note": null
+    },
+    {
+      "id": "ev-73be34bfc8f8",
+      "device": "lab-lsp-pe-01",
+      "command": "show mpls lsp name FGame-SGP-PE-01-01-To-10.255.56.8 extensive | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 39,
+      "bytes": 1426,
+      "output_sha256": "a6fac04c0d8af67aee098e3ca48d16cf72a664b67da1ee1e3cf93fe3828c1f61",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/03-show_mpls_lsp_name_FGame-SGP-PE-01-01-To-10.255-a4cba1.txt",
+      "note": null
+    },
+    {
+      "id": "ev-a509254ede07",
+      "device": "lab-lsp-pe-01",
+      "command": "show rsvp session extensive | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 17,
+      "bytes": 513,
+      "output_sha256": "16dd8084948f7b947bbc55e842164817b927033e72e2f2e6bb9498aa377eb074",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/04-show_rsvp_session_extensive-228f12.txt",
+      "note": null
+    },
+    {
+      "id": "ev-bafac21ef61f",
+      "device": "lab-lsp-pe-01",
+      "command": "show rsvp interface | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 209,
+      "output_sha256": "680d6dbf420a93041a818d19ffda92918658ecee914173d00734be1332e71613",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/05-show_rsvp_interface-772734.txt",
+      "note": null
+    },
+    {
+      "id": "ev-be5871704f3e",
+      "device": "lab-lsp-pe-01",
+      "command": "show isis adjacency | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 5,
+      "bytes": 183,
+      "output_sha256": "fbf1712a3aee961717d158677222476127e9d9a35d0e8f0870f9c0c5dc71b297",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/06-show_isis_adjacency-4a45e0.txt",
+      "note": null
+    },
+    {
+      "id": "ev-b2f242ac3d74",
+      "device": "lab-lsp-pe-01",
+      "command": "show lldp neighbors | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 5,
+      "bytes": 232,
+      "output_sha256": "e84dbf3fe9b625a73363ec84adbc20738b7a4894331900f7561083cd2eb78fd5",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/07-show_lldp_neighbors-de7023.txt",
+      "note": null
+    },
+    {
+      "id": "ev-64a2e346cbd2",
+      "device": "lab-lsp-pe-01",
+      "command": "show interfaces descriptions | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 214,
+      "output_sha256": "94f0f3051f8ce0e7c7166a5517cf09e66a06327bd36a5732ec20b1967d644465",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/08-show_interfaces_descriptions-d86443.txt",
+      "note": null
+    },
+    {
+      "id": "ev-4d24893b71e2",
+      "device": "lab-lsp-pe-01",
+      "command": "show interfaces terse | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 302,
+      "output_sha256": "04e9eeabd9a52de9af883c9343e6cc6596ccebabf9b25f1b089afbd68285e725",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-01-d51ab8/09-show_interfaces_terse-477b22.txt",
+      "note": null
+    },
+    {
+      "id": "ev-c5a4eaa502ad",
+      "device": "lab-lsp-gw-02",
+      "command": "show interfaces terse | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 307,
+      "output_sha256": "132601318c0c2c981037acd6b7c7e4b7937e7845dad31a585d9ad6f6f32476f1",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-gw-02-de6459/01-show_interfaces_terse-477b22.txt",
+      "note": null
+    },
+    {
+      "id": "ev-6059ff57d076",
+      "device": "lab-lsp-gw-02",
+      "command": "show interfaces descriptions | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 214,
+      "output_sha256": "4a56ecf0a95eade01b1b6ed7b8ad8be60b461839aa764073d16ea89a0cfc8cb7",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-gw-02-de6459/02-show_interfaces_descriptions-d86443.txt",
+      "note": null
+    },
+    {
+      "id": "ev-7ed04882f096",
+      "device": "lab-lsp-gw-02",
+      "command": "show lldp neighbors | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 324,
+      "output_sha256": "cd0d48b9f2360bdac627c30735bfdfcff2e0f1235700e89e84d0ae2b751d3a0b",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-gw-02-de6459/03-show_lldp_neighbors-de7023.txt",
+      "note": null
+    },
+    {
+      "id": "ev-e1b20f23cf2d",
+      "device": "lab-lsp-gw-02",
+      "command": "show isis adjacency | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 246,
+      "output_sha256": "106a65ccfe886c54e13789df9f4aafe2f7a736e0f347667caae80d747ba1c67c",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-gw-02-de6459/04-show_isis_adjacency-4a45e0.txt",
+      "note": null
+    },
+    {
+      "id": "ev-0d87dcc1a674",
+      "device": "lab-lsp-gw-02",
+      "command": "show configuration interfaces | display set | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 272,
+      "output_sha256": "20bc8a47bbfa769ca1d157f08aa806ae8d543f05b1e8476c2b0e235f52999702",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-gw-02-de6459/05-show_configuration_interfaces-938500.txt",
+      "note": null
+    },
+    {
+      "id": "ev-56bff9b2f62e",
+      "device": "lab-lsp-mc-02",
+      "command": "show interfaces terse | no-more",
+      "timestamp": "2026-11-16T08:06:48Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 306,
+      "output_sha256": "eebbe14930b900083352a1abf0cbe86f2393f66a461a8215e9ca82f7335ff5ea",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-mc-02-1211a7/01-show_interfaces_terse-477b22.txt",
+      "note": null
+    },
+    {
+      "id": "ev-a4d1f364e308",
+      "device": "lab-lsp-mc-02",
+      "command": "show interfaces descriptions | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 214,
+      "output_sha256": "49e36963b4f0b306837dbc45e042ab89d65c307b1107caa031e039be3c7bacad",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-mc-02-1211a7/02-show_interfaces_descriptions-d86443.txt",
+      "note": null
+    },
+    {
+      "id": "ev-07cb787e75b4",
+      "device": "lab-lsp-mc-02",
+      "command": "show lldp neighbors | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 324,
+      "output_sha256": "43a2aeb5a54425a525bc70421fa551db52217cd5afe38bbc68998f72080e71e2",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-mc-02-1211a7/03-show_lldp_neighbors-de7023.txt",
+      "note": null
+    },
+    {
+      "id": "ev-c9a1a3a7c0d7",
+      "device": "lab-lsp-mc-02",
+      "command": "show isis adjacency | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 246,
+      "output_sha256": "6a02d8888599cecc632fbbfae5310456f7d7007dd994b308a80abdae87c8156f",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-mc-02-1211a7/04-show_isis_adjacency-4a45e0.txt",
+      "note": null
+    },
+    {
+      "id": "ev-90e8584373d9",
+      "device": "lab-lsp-mc-02",
+      "command": "show configuration interfaces | display set | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 271,
+      "output_sha256": "0c47be7e7ee68404028f06e961025eb8ab44a804de36bd7173db9bd027adb523",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-mc-02-1211a7/05-show_configuration_interfaces-938500.txt",
+      "note": null
+    },
+    {
+      "id": "ev-d1851e031e3b",
+      "device": "lab-lsp-pe-02",
+      "command": "show interfaces terse | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 6,
+      "bytes": 245,
+      "output_sha256": "33e136ed8f971d0e076741c0f9a200e55de90aedccbdfbab7877bb66bc0147b3",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-02-fccbcd/01-show_interfaces_terse-477b22.txt",
+      "note": null
+    },
+    {
+      "id": "ev-2e5be3469a09",
+      "device": "lab-lsp-pe-02",
+      "command": "show interfaces descriptions | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 7,
+      "bytes": 214,
+      "output_sha256": "3cadb9e841b58b3fe34780e7ce822d955cb7181ef43720ee03239a11fb97b9ff",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-02-fccbcd/02-show_interfaces_descriptions-d86443.txt",
+      "note": null
+    },
+    {
+      "id": "ev-9a2f3643702b",
+      "device": "lab-lsp-pe-02",
+      "command": "show lldp neighbors | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 4,
+      "bytes": 140,
+      "output_sha256": "427c6e733fe4fb0ff3096aba74ece4eb1cf0fb6d5a6ee66f3caad29e0316b41a",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-02-fccbcd/03-show_lldp_neighbors-de7023.txt",
+      "note": null
+    },
+    {
+      "id": "ev-15177b6c6f15",
+      "device": "lab-lsp-pe-02",
+      "command": "show isis adjacency | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 5,
+      "bytes": 183,
+      "output_sha256": "e5e490eb7d8b8076205963d41a1cc74a4f6f1ffdd0d8432de4a2a8c13527681d",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-02-fccbcd/04-show_isis_adjacency-4a45e0.txt",
+      "note": null
+    },
+    {
+      "id": "ev-ae03263b68ab",
+      "device": "lab-lsp-pe-02",
+      "command": "show configuration interfaces | display set | no-more",
+      "timestamp": "2026-11-16T08:06:49Z",
+      "status": "SUCCESS",
+      "output_complete": true,
+      "data_state": "FULL",
+      "error_reason": null,
+      "error_category": null,
+      "message": null,
+      "lines": 5,
+      "bytes": 203,
+      "output_sha256": "cfaafbee24a04e2320573779367c91b61e4389816677d33bcda0112210fb730f",
+      "output_ref": "evidence/lsp_20261116T080648Z_27cc3b/lab-lsp-pe-02-fccbcd/05-show_configuration_interfaces-938500.txt",
+      "note": null
+    }
+  ],
+  "devices_queried": [
+    {
+      "name": "lab-lsp-pe-01",
+      "status": "SUCCESS",
+      "commands": 9,
+      "session_reused": true,
+      "role": "source"
+    },
+    {
+      "name": "lab-lsp-gw-02",
+      "status": "SUCCESS",
+      "commands": 5,
+      "session_reused": true,
+      "role": "verification"
+    },
+    {
+      "name": "lab-lsp-mc-02",
+      "status": "SUCCESS",
+      "commands": 5,
+      "session_reused": true,
+      "role": "verification"
+    },
+    {
+      "name": "lab-lsp-pe-02",
+      "status": "SUCCESS",
+      "commands": 5,
+      "session_reused": true,
+      "role": "verification"
+    }
+  ],
+  "rsvp_interfaces": [
+    {
+      "interface": "ge-0/0/0.0",
+      "state": "Up",
+      "active": 1,
+      "total": 1,
+      "hello": 9,
+      "subscription": "1",
+      "static_bandwidth": "9",
+      "available_bandwidth": "0",
+      "reserved_bandwidth": null,
+      "highwater": null,
+      "raw": "ge-0/0/0.0       Up       1       1       9       0"
+    },
+    {
+      "interface": "ge-0/0/1.0",
+      "state": "Up",
+      "active": 1,
+      "total": 1,
+      "hello": 9,
+      "subscription": "1",
+      "static_bandwidth": "9",
+      "available_bandwidth": "0",
+      "reserved_bandwidth": null,
+      "highwater": null,
+      "raw": "ge-0/0/1.0       Up       1       1       9       0"
+    }
+  ],
+  "path_style_counts": {
+    "PRIMARY ACTIVE": 1,
+    "BACKUP CONFIGURED": 1
+  },
+  "cache": null,
+  "query": {
+    "source": "lab-lsp-pe-01",
+    "lsp": "FGame-SGP-PE-01-01-To-10.255.56.8",
+    "evidence_complete": true
+  },
+  "snapshot": {
+    "id": "lsp_20261116T080648Z_27cc3b",
+    "label": "lab-lsp-pe-01 · FGame-SGP-PE-01-01-To-10.255.56.8",
+    "snapshot_type": "AFTER",
+    "created_at": "2026-11-16T08:06:49Z"
+  }
+}

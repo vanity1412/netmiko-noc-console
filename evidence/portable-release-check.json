@@ -1,0 +1,24 @@
+{
+  "bundle": "Netmiko-Web-Console-1.0.0-portable.zip",
+  "verified_on": "copy outside the dev folder",
+  "checks": {
+    "bundled_mcp": true,
+    "mcp_state": "ready",
+    "start_script": "START_WINDOWS.bat selected port 8788 and opened the UI",
+    "stop_script": "STOP_WINDOWS.bat stopped only the portable Web/MCP",
+    "sample_inventory_count": 3,
+    "real_readonly_command": {
+      "device_platform": "Juniper ACX7100 (Junos EVO)",
+      "command": "show version",
+      "status": "SUCCESS",
+      "raw_contains_junos": true
+    }
+  },
+  "package_exclusions_verified": [
+    "credentials.json",
+    "known_hosts",
+    "production device.csv",
+    "history/raw output/runtime token"
+  ],
+  "note": "Production credentials were used only in a temporary test copy, which was deleted. The published ZIP contains templates only."
+}

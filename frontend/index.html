@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#060a11" />
+    <meta name="description" content="Netmiko Web Console — NOC dashboard điều khiển CLI hàng loạt qua Netmiko MCP" />
+    <title>Netmiko Web Console · NOC</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23060a11'/%3E%3Cpath d='M8 12l5 4-5 4M16 20h8' stroke='%2322d3ee' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <style>
+      html, body { margin: 0; background: #060a11; color: #e8effa; }
+      #boot { position: fixed; inset: 0; display: grid; place-items: center; font-family: system-ui, sans-serif; }
+      #boot .dot { width: 10px; height: 10px; border-radius: 50%; background: #22d3ee; animation: b 1s infinite alternate; }
+      @keyframes b { to { opacity: 0.2; transform: scale(0.7); } }
+    </style>
+  </head>
+  <body>
+    <div id="root"><div id="boot"><span class="dot"></span></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

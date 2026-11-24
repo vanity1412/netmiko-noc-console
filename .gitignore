@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Node / Frontend build
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sensitive Operational Data (QUAN TRỌNG: Bảo vệ IP & Mật khẩu thiết bị)
+config/credentials.json
+config/device.csv
+config/devices.json
+!config/credentials.example.json
+!config/device.example.csv
+!config/README.md
+
+# Input & Raw operational files
+input/
+!input/.gitkeep
+logs/
+*.log
+
+# Vendor MCP & Email configs with credentials
+vendor/email/smtp-settings.json
+!vendor/email/smtp-settings.example.json
+vendor/mcp/devices.json
+!vendor/mcp/devices.example.json
+vendor/mcp/credentials.json
+!vendor/mcp/credentials.example.json
+vendor/mcp/ssh/
+vendor/mcp/known_hosts
+
+# Runtime & Local Cache Databases
+data/runs/
+data/mcp-outputs/
+data/mcp-known_hosts
+data/autodetect.sqlite3*
+data/history.sqlite3*
+data/lsp/
+data/tmp/
+data/ai_settings.json
+data/runtime.json
+
+# Environment variables & API keys
+.env
+.env.local
+*.pem
+*.key
+
+# IDE / OS files
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

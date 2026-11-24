@@ -1,0 +1,16 @@
+{
+  "verification": "juniper preparation shim",
+  "mode": "read-only",
+  "web_mcp_shim": "skip",
+  "tested_devices": 2,
+  "command": "show version",
+  "results": [
+    {"platform": "ACX7100-32C", "junos": "23.4R2-S6.9-EVO", "status": "SUCCESS", "lines": 9, "output_complete": true},
+    {"platform": "Juniper AGG-BRAS", "status": "SUCCESS", "lines": 104, "output_complete": true}
+  ],
+  "notes": [
+    "No configuration commands were executed.",
+    "MCP source under mcp/ was not modified; the shim lives in backend/console/mcp_launcher.py and applies only to the Web-owned MCP child.",
+    "Production device names/IPs are intentionally omitted."
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "note": "Bộ lệnh chỉ đọc (read-only) gợi ý theo hãng. Người dùng vẫn có thể nhập lệnh khác; Web Console không tự thêm lệnh cấu hình.",
+  "groups": [
+    {
+      "id": "cisco_ios",
+      "label": "Cisco IOS",
+      "vendor": "cisco",
+      "device_types": ["cisco_ios"],
+      "note": "IOS/IOS-XE — lệnh show chỉ đọc",
+      "commands": [
+        {"label": "Version", "cmd": "show version"},
+        {"label": "Clock", "cmd": "show clock"},
+        {"label": "IP interfaces", "cmd": "show ip interface brief"},
+        {"label": "Interface status", "cmd": "show interfaces status"},
+        {"label": "Route summary", "cmd": "show ip route summary"},
+        {"label": "CPU", "cmd": "show processes cpu sorted | exclude 0.00"},
+        {"label": "Memory", "cmd": "show memory statistics"},
+        {"label": "Logging errors", "cmd": "show logging | include %SYS|%LINK|%LINEPROTO"}
+      ]
+    },
+    {
+      "id": "cisco_xr",
+      "label": "Cisco IOS XR",
+      "vendor": "cisco",
+      "device_types": ["cisco_xr"],
+      "note": "IOS XR — lệnh show chỉ đọc",
+      "commands": [
+        {"label": "Version", "cmd": "show version"},
+        {"label": "Clock", "cmd": "show clock"},
+        {"label": "Interfaces", "cmd": "show interfaces brief"},
+        {"label": "Route summary", "cmd": "show route summary"},
+        {"label": "BGP summary", "cmd": "show bgp summary"},
+        {"label": "CPU", "cmd": "show processes cpu"},
+        {"label": "Alarms", "cmd": "show alarms"}
+      ]
+    },
+    {
+      "id": "juniper_junos",
+      "label": "Juniper Junos",
+      "vendor": "juniper",
+      "device_types": ["juniper_junos"],
+      "note": "Junos — lệnh show chỉ đọc",
+      "commands": [
+        {"label": "Version", "cmd": "show version"},
+        {"label": "Uptime", "cmd": "show system uptime"},
+        {"label": "Alarms", "cmd": "show chassis alarms"},
+        {"label": "Interfaces terse", "cmd": "show interfaces terse"},
+        {"label": "Route summary", "cmd": "show route summary"},
+        {"label": "BGP summary", "cmd": "show bgp summary"},
+        {"label": "Resources", "cmd": "show system resource"}
+      ]
+    },
+    {
+      "id": "huawei",
+      "label": "Huawei VRP",
+      "vendor": "huawei",
+      "device_types": ["huawei"],
+      "note": "Huawei VRP — lệnh display chỉ đọc",
+      "commands": [
+        {"label": "Version", "cmd": "display version"},
+        {"label": "Clock", "cmd": "display clock"},
+        {"label": "Interfaces brief", "cmd": "display interface brief"},
+        {"label": "Route statistics", "cmd": "display ip routing-table statistics"},
+        {"label": "CPU", "cmd": "display cpu-usage"},
+        {"label": "Memory", "cmd": "display memory-usage"},
+        {"label": "Alarms", "cmd": "display alarm active"}
+      ]
+    },
+    {
+      "id": "generic_termserver",
+      "label": "Vertiv / Termserver",
+      "vendor": "vertiv",
+      "device_types": ["generic_termserver"],
+      "note": "Thiết bị termserver/console server — xác nhận lệnh theo đúng model/firmware",
+      "commands": [
+        {"label": "Version", "cmd": "show version"},
+        {"label": "System", "cmd": "show system"},
+        {"label": "Users", "cmd": "show user"},
+        {"label": "Ports", "cmd": "show port all"}
+      ]
+    },
+    {
+      "id": "linux",
+      "label": "Linux",
+      "vendor": "linux",
+      "device_types": ["linux"],
+      "note": "Linux shell — lệnh chỉ đọc",
+      "commands": [
+        {"label": "Hostname", "cmd": "hostname"},
+        {"label": "Uptime", "cmd": "uptime"},
+        {"label": "Date", "cmd": "date"},
+        {"label": "Kernel", "cmd": "uname -a"},
+        {"label": "OS release", "cmd": "cat /etc/os-release"},
+        {"label": "Disk", "cmd": "df -h"},
+        {"label": "Memory", "cmd": "free -m"},
+        {"label": "Sockets", "cmd": "ss -s"},
+        {"label": "Addresses", "cmd": "ip -brief addr"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+name,ip,netmiko_device_type,description,manufacturer,function,room,rack,pop,serviceZoneName,profile
+LAB-EDGE-01,192.0.2.11,cisco_ios,LAB-EDGE-CISCO,cisco,LAB,LAB01,R1-U1,LAB,LAB,default
+LAB-EDGE-02,192.0.2.12,juniper_junos,LAB-EDGE-JUNIPER,juniper,LAB,LAB01,R1-U2,LAB,LAB,default
+LAB-EDGE-03,192.0.2.13,linux,LAB-EDGE-LINUX,server,Server,LAB01,R1-U3,LAB,LAB,default

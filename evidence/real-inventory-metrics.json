@@ -1,0 +1,17 @@
+{
+ "inventory_total_text": "3.222\nTHIẾT BỊ",
+ "rows_rendered": 100,
+ "first_rows_seconds": 0.41,
+ "inventory_requests": [
+  {
+   "name": "http://127.0.0.1:8787/api/inventory?page=1&limit=100&sort=name&direction=asc",
+   "duration": 38.299999952316284,
+   "transfer": 66336
+  }
+ ],
+ "cisco_filtered_count": "306",
+ "selected_count": "3",
+ "horizontal_overflow_px": 0,
+ "console_errors": [],
+ "url": "http://127.0.0.1:8787/"
+}

@@ -1,0 +1,31 @@
+{
+  "defaults": {
+    "execution_policy": "read_only",
+    "device_type": "autodetect",
+    "ssh_mode": "compatible",
+    "auto_enable": false,
+    "ssh_strict": false,
+    "system_host_keys": false,
+    "alt_host_keys": false,
+    "session_ttl_seconds": 28800,
+    "session_max_age_seconds": 43200,
+    "max_sessions": 64,
+    "max_workers": 8,
+    "keepalive": 30,
+    "health_check_interval_seconds": 30,
+    "prompt_quiet_seconds": 0.03,
+    "timing_quiet_seconds": 0.1,
+    "redaction_enabled": false,
+    "prefer_inventory_driver": true,
+    "auth_failure_cooldown_seconds": 30,
+    "host_key_store_mode": "process",
+    "output_storage_mode": "shared",
+    "output_cleanup_interval_seconds": 30,
+    "autodetect_persistent_cache": true
+  },
+  "profiles": {
+    "default": {}
+  },
+  "devices": {},
+  "credentials_file": "credentials.json"
+}
