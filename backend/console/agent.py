@@ -34,27 +34,31 @@ Dẫn ID bằng chứng cho kết luận. Ghi rõ phần thu thập thiếu, b�
 Nếu chưa chốt được, nêu đã xác minh gì, thiếu gì, và vì sao phần thiếu chặn kết luận hay dòng cấu hình.
 Không điền tham số đoán.
 
-Khi trả báo cáo tổng kết (action: finish), luôn cấu trúc báo cáo Markdown chuẩn FPT NOC gồm đủ các mục sau:
-# NETWORK OPERATIONS
-## [Tên dịch vụ/sự cố] — đối soát route và thiết bị
-### Báo cáo điều tra & bằng chứng kỹ thuật
+Khi trả báo cáo tổng kết (action: finish), BẮT BUỘC cấu trúc báo cáo bằng tiếng Việt gồm đủ 5 phần chuẩn sau:
 
-### 1. Kết luận (Executive Summary)
-Tóm tắt hiện trạng, các cặp thiết bị liên quan (Model, IP), trạng thái Production vs Staging. Khẳng định rõ chưa/đã thay đổi thiết bị.
+1. Kết luận:
+   Hiện trạng, nguyên nhân, mức độ tin cậy. Tóm tắt rõ ràng các cặp thiết bị liên quan (Model, IP), trạng thái Production vs Staging. Khẳng định rõ chưa hoặc đã thay đổi thiết bị.
 
-### 2. Bằng chứng (Technical Evidence)
-Bảng hoặc danh sách đối soát theo [Phạm vi | Kết quả]: dẫn rõ ID bằng chứng, next-hop FIB, interface, route table, VRF.
+2. Bằng chứng:
+   Thiết bị, lệnh, output thực tế và ý nghĩa kỹ thuật. Trình bày bảng hoặc danh sách đối soát theo [Phạm vi | Kết quả & Dẫn chứng ID]: dẫn rõ ID bằng chứng, next-hop FIB, interface, routing table, VRF.
 
-### 3. Hướng xử lý (Action Plan)
-- **Production:** Biện pháp kiểm tra an toàn (không đổi route tùy tiện, đối chiếu session, policy, NAT).
-- **Staging / LAB:** Kế hoạch kiểm tra, rà soát VLAN, quảng bá route, xác minh next-hop.
-- **Rollback:** Quy trình hoàn trả nếu có can thiệp.
+3. Hướng xử lý:
+   Phương án tốt nhất và cấu hình đề xuất đảm bảo suy luận thật kỹ từ việc đọc cấu hình thiết bị thực tế rồi mới đưa ra:
+   - Production: Biện pháp kiểm tra an toàn (không đổi route tùy tiện, đối chiếu session, policy, NAT).
+   - Staging / LAB: Kế hoạch kiểm tra, rà soát VLAN, quảng bá route, xác minh next-hop.
+   - Rollback: Quy trình hoàn trả an toàn nếu có can thiệp cấu hình.
 
-### 4. Chưa xác minh (Gaps / Unverified)
-Các điểm nghẽn chưa thể xác minh (Gateway/VRF chưa rõ, thiết bị firewall chặn lệnh, thông tin thiếu...).
+4. Chưa xác minh:
+   Những điểm còn thiếu, chưa có bằng chứng hoặc bị firewall/policy từ chối lệnh, nêu rõ chúng ảnh hưởng thế nào đến quyết định xử lý.
 
-### 5. Nhật ký điều tra & Log CLI thô (Timeline & Raw Evidence)
-Liệt kê mốc thời gian điều tra, các lệnh show/traceroute đã chạy và trích đoạn output cốt lõi làm bằng chứng sống.
+5. Nhật ký điều tra:
+   Mỗi bước ghi rõ ràng theo quy trình:
+   Mục tiêu/giả thuyết → Thiết bị + lệnh thực tế → Output quan trọng và đường dẫn/ID bằng chứng → Phân tích (ủng hộ/bác bỏ/chưa đủ) → Quyết định tiếp theo + lý do.
+   - Ghi nhận đầy đủ lỗi/timeout, cách xử lý và kết quả kiểm chứng lại.
+   - Tách bạch dữ liệu thật, dữ liệu mô phỏng và đề xuất chưa chạy.
+   - Chỉ ghi thời gian/số đo thực, nêu định nghĩa phép đo.
+   - Tuyệt đối không dùng output lệch lệnh, không tự dựng bằng chứng hoặc suy ra nguyên nhân từ counter tích lũy.
+   - Bằng chứng đầy đủ phải được lưu cùng hồ sơ và trích dẫn output cốt lõi làm bằng chứng sống, không chỉ dẫn tới output_id có TTL ngắn.
 """
 
 
@@ -1150,10 +1154,6 @@ Chỉ trả về JSON hợp lệ, không bọc markdown hay thêm text khác.
         report = plan.get("report")
         if not isinstance(report, str) or not report.strip():
             return None, "Model chưa trả phần kết luận."
-        if re.search(r"`|~~~|^ {4}\S|^\s*(?:[-*+]\s+|\d+\.\s+)?"
-                     r"(?:set|delete|configure|interface|router|ip route|undo|system-view|"
-                     r"show|display|commit|no)\s", report, re.I | re.M):
-            return None, "Phần phân tích phải là văn xuôi. Đặt CLI vào trường proposal."
 
         proposal = plan.get("proposal")
         if proposal is None:
@@ -1242,7 +1242,7 @@ Chọn một bước tiếp và trả JSON thuần theo một trong các mẫu:
 - Nếu thiết bị đã nêu trong ticket hoặc thuộc kho trên, bạn có thể gọi ngay "action":"execute" với 1-4 lệnh show/display thích hợp để thu thập chứng cứ nhanh.
 - Dùng các lệnh show/display an toàn (ví dụ: show chassis routing-engine, show system processes extensive, show interfaces terse, show bgp summary).
 - Đọc đủ từng trang trước khi kết luận.
-- Trong report trình bày chuẩn mẫu FPT NOC gồm 5 phần: 1. Kết luận | 2. Bằng chứng (ID chứng cứ, FIB, next-hop, VRF) | 3. Hướng xử lý (Production vs Staging) | 4. Chưa xác minh | 5. Nhật ký điều tra.
+- Trong report trình bày BẮT BUỘC đủ 5 phần chuẩn: 1. Kết luận (hiện trạng, nguyên nhân, độ tin cậy) | 2. Bằng chứng (thiết bị, lệnh, output thực tế & ý nghĩa) | 3. Hướng xử lý (phương án tốt nhất & cấu hình đề xuất suy luận kĩ từ cấu hình thực tế) | 4. Chưa xác minh (điểm thiếu ảnh hưởng quyết định) | 5. Nhật ký điều tra (Mục tiêu/giả thuyết → Thiết bị+lệnh thực tế → Output quan trọng và đường dẫn bằng chứng → Phân tích ủng hộ/bác bỏ/chưa đủ → Quyết định tiếp theo + lý do). Ghi lỗi/timeout, kết quả kiểm chứng lại; tách dữ liệu thật, mô phỏng và đề xuất chưa chạy. Không dùng output lệch lệnh hoặc suy đoán từ counter tích lũy.
 """
         if not auto_execute:
             instructions += "\nTự chạy đã tắt. Chỉ tra inventory và nêu phép đọc cần có trong báo cáo."
